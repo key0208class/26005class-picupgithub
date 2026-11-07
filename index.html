@@ -1,75 +1,111 @@
-
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-							<style>
-								body {
-									background-color: white; /* Ensure the iframe has a white background */
-								}
-
-								
-							</style>
-                        </head>
-                        <body>
-                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>神殿試煉圖床上傳器（GitHub 圖床）v2</title>
+<title>神殿試煉圖床上傳器（GitHub 圖床）v4</title>
 <style>
-:root{--bg:#0f1220;--panel:#171c33;--line:#2a3158;--text:#e8ebff;--muted:#9aa3d1;--accent:#7c5cff;--ok:#2ecc71;--err:#ff5d6c;--warn:#ffc857;}
+:root{--bg:#0f1220;--panel:#171c33;--line:#2a3158;--text:#e8ebff;--muted:#9aa3d1;--accent:#7c5cff;--ok:#2ecc71;--err:#ff5d6c;--warn:#ffc857;--link:#bfe0ff}
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,"Microsoft JhengHei","PingFang TC",sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
 header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 h1{font-size:20px;margin:0}
 .wrap{max-width:1100px;margin:0 auto;padding:20px;display:grid;gap:16px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
 .card h2{font-size:16px;margin:0 0 12px}
 label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
+.check{display:flex;gap:6px;align-items:center;color:var(--text);margin:8px 0;font-size:14px}
 input[type=text],input[type=password],input[type=number],select,textarea{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0c0f1e;color:var(--text);font:inherit}
+input[type=checkbox]{width:16px;height:16px;flex:none}
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-button{font:inherit;padding:8px 14px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+.tokenrow{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center}
+button{font:inherit;padding:8px 14px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer;min-height:36px}
 button.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
 button.danger{background:var(--err)}
-button:disabled{opacity:.5;cursor:not-allowed}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,[tabindex]:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
 .hint{font-size:12px;color:var(--muted)}
-.status{font-size:13px;margin-top:8px;min-height:1em}
-.ok{color:var(--ok)}
-.err{color:var(--err)}
-.warn{color:var(--warn)}
-#drop{border:2px dashed var(--line);border-radius:12px;padding:30px;text-align:center;color:var(--muted);cursor:pointer}
+.status{font-size:13px;margin-top:8px;min-height:1em;overflow-wrap:anywhere}
+.ok{color:var(--ok)}.err{color:var(--err)}.warn{color:var(--warn)}
+#drop{border:2px dashed var(--line);border-radius:12px;padding:30px 16px;text-align:center;color:var(--muted);cursor:pointer}
 #drop.over{border-color:var(--accent);background:#1d2344}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.toolbar input[type=text]{flex:1;min-width:240px}
+.crumb{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:14px;margin:10px 0}
+.crumb button{padding:2px 8px;min-height:0;background:transparent;color:var(--link);border:1px solid var(--line)}
+.folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:10px}
+.folders:empty{display:none}
+.folder{background:#0c0f1e;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:left;color:var(--text);min-height:0}
+.folder:hover{border-color:var(--accent)}
+.grid,.strip{display:grid;gap:10px;margin-top:10px}
+.grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+.strip{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}
+.tile{position:relative;background:#0c0f1e;border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.tile .thumb{width:100%;height:120px;border-radius:0}
+.tile .sel{position:absolute;top:6px;left:6px;z-index:1;width:18px;height:18px}
+.tile .nm{font-size:12px;padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thumb{width:64px;height:64px;flex:none;border-radius:6px;background:repeating-conic-gradient(#1a2044 0 25%,#0c0f1e 0 50%) 0 0/12px 12px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in;border:0;padding:0;min-height:0}
+.thumb img{width:100%;height:100%;object-fit:contain;display:block}
+.strip .thumb{width:100%;height:88px}
+.ph{font-size:11px;color:var(--muted);padding:4px;text-align:center}
 .list{display:grid;gap:8px;margin-top:12px}
-.item{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;background:#0c0f1e;border:1px solid var(--line);border-radius:10px;padding:8px}
-.item img{width:64px;height:64px;object-fit:contain;background:#080a14;border-radius:6px}
+.item{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;background:#0c0f1e;border:1px solid var(--line);border-radius:10px;padding:8px;min-width:0}
 .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
-.bar>div{height:100%;background:var(--accent);transition:width .3s}
-.url{font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-all;color:#bfe0ff}
+.bar>div{height:100%;background:var(--accent);transition:width .2s}
+.url{font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-all;color:var(--link)}
 .actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.badge{display:inline-block;font-size:11px;padding:1px 6px;border-radius:6px;background:#222a52;color:var(--muted);margin:2px 2px 0 0}
+.badge.warn{background:rgba(255,200,87,.15);color:var(--warn)}
+.badge.ok{background:rgba(46,204,113,.15);color:var(--ok)}
+.progress-box{margin-top:10px;background:#0c0f1e;border:1px solid var(--line);border-radius:10px;padding:10px}
+.progress-box .bar{height:10px}
+.stats{font-size:12px;color:var(--muted);margin-top:4px}
+.empty{color:var(--muted);font-size:14px;padding:12px 0}
+.lb{position:fixed;inset:0;background:rgba(5,7,15,.92);z-index:50;display:flex;align-items:center;justify-content:center;padding:12px}
+.lb[hidden],.toast[hidden],#progress[hidden]{display:none}
+.lb-box{position:relative;width:min(960px,100%);display:flex;flex-direction:column;align-items:center;gap:10px}
+.lb img{max-width:100%;max-height:68vh;object-fit:contain;background:repeating-conic-gradient(#1a2044 0 25%,#0c0f1e 0 50%) 0 0/16px 16px;border-radius:8px}
+.lb-info{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px}
+.lb-cap{font-size:13px;color:var(--muted)}
+.lb-x,.lb-nav{position:absolute;background:rgba(23,28,51,.92);border:1px solid var(--line);color:var(--text);min-height:0;padding:4px 12px;font-size:20px}
+.lb-x{top:-8px;right:-4px}
+.lb-nav{top:40%}
+#lbPrev{left:-6px}#lbNext{right:-6px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--accent);padding:8px 16px;border-radius:10px;z-index:60;font-size:14px}
 ol li{margin:4px 0;font-size:14px}
+@media (max-width:640px){
+  .wrap{padding:12px}
+  header{padding:12px}
+  .tokenrow{grid-template-columns:1fr}
+  .item{grid-template-columns:56px 1fr}
+  .item .thumb{width:56px;height:56px}
+  .item .actions{grid-column:1/-1}
+  .lb-x{top:-36px;right:0}
+  .lb-nav{top:auto;bottom:-44px}
+  #lbPrev{left:0}#lbNext{right:0}
+  .lb-box{padding-bottom:44px}
+}
 </style>
 </head>
 <body>
 <header>
-  <h1>⚔️ 神殿試煉圖床上傳器（GitHub 圖床）v2</h1>
+  <h1>⚔️ 神殿試煉圖床上傳器（GitHub 圖床）v4</h1>
   <div id="who" class="hint">尚未登入</div>
 </header>
 
-<div class="wrap">
+<main class="wrap">
 
 <!-- ① 登入 -->
 <section class="card">
   <h2>① 登入 GitHub</h2>
-  <label>Personal Access Token（建議使用 Fine-grained Token，只授權單一倉庫的 Contents 讀寫）</label>
-  <div class="row" style="grid-template-columns:1fr auto auto">
+  <label for="token">Personal Access Token（建議 Fine-grained Token，只授權單一倉庫的 Contents 讀寫）</label>
+  <div class="tokenrow">
     <input type="password" id="token" placeholder="github_pat_xxxxx 或 ghp_xxxxx" autocomplete="off">
     <button id="btnLogin">登入驗證</button>
     <button class="ghost" id="btnLogout">登出</button>
   </div>
-  <p class="hint">Token 只保存在你這台瀏覽器的 localStorage，程式只會直接呼叫 api.github.com，不經過第三方伺服器。公用電腦請用完即登出。</p>
+  <label class="check"><input type="checkbox" id="remember"> 記住 Token（保存於本機瀏覽器；未勾選時僅保存在本分頁，關閉分頁即失效）</label>
+  <p class="hint">程式只會直接呼叫 api.github.com，不經過第三方伺服器。公用電腦請用完即登出。</p>
   <div id="loginMsg" class="status"></div>
 </section>
 
@@ -77,13 +113,13 @@ ol li{margin:4px 0;font-size:14px}
 <section class="card">
   <h2>② 倉庫與連結設定</h2>
   <div class="row">
-    <div><label>GitHub 帳號／組織（owner）</label><input type="text" id="owner"></div>
-    <div><label>倉庫名稱（repo）</label><input type="text" id="repo" placeholder="例：game-assets"></div>
-    <div><label>分支（branch）</label><input type="text" id="branch" value="main"></div>
+    <div><label for="owner">GitHub 帳號／組織（owner）</label><input type="text" id="owner"></div>
+    <div><label for="repo">倉庫名稱（repo）</label><input type="text" id="repo" placeholder="例：game-assets"></div>
+    <div><label for="branch">分支（branch）</label><input type="text" id="branch" value="main"></div>
   </div>
   <div class="row">
     <div>
-      <label>圖片分類（資料夾）</label>
+      <label for="category">圖片分類（資料夾）</label>
       <select id="category">
         <option value="mercenaries">傭兵 (mercenaries)</option>
         <option value="characters">角色 (characters)</option>
@@ -92,60 +128,94 @@ ol li{margin:4px 0;font-size:14px}
         <option value="misc">其他 (misc)</option>
       </select>
     </div>
-    <div><label>子資料夾（選填，例：fire_mage、lv1）</label><input type="text" id="sub"></div>
+    <div><label for="sub">子資料夾（選填，例：fire_mage、lv1）</label><input type="text" id="sub"></div>
     <div>
-      <label>遊戲用連結格式</label>
+      <label for="linkMode">遊戲用連結格式</label>
       <select id="linkMode">
         <option value="raw">raw.githubusercontent（原始檔）</option>
-        <option value="cdn">jsDelivr CDN（有快取，速度較快）</option>
+        <option value="cdn">jsDelivr CDN（有快取、速度較快；單檔約 20MB 上限）</option>
       </select>
     </div>
   </div>
-  <label style="display:flex;gap:6px;align-items:center;color:var(--text)">
-    <input type="checkbox" id="autoRename" checked>
-    自動加上時間戳記避免覆蓋（建議開啟）；關閉則保留原檔名，同名檔案會上傳失敗（適合固定檔名的精靈圖影格）
-  </label>
+  <div class="row">
+    <div><label for="chunkSize">每個 commit 最多張數（1–500，預設 100）</label><input type="number" id="chunkSize" min="1" max="500" value="100"></div>
+    <div><label for="retryMax">失敗自動重試次數（0–10，預設 5）</label><input type="number" id="retryMax" min="0" max="10" value="5"></div>
+  </div>
+  <label class="check"><input type="checkbox" id="autoRename" checked> 自動加上時間戳記避免覆蓋（建議開啟；關閉時同名檔案會被略過並標示錯誤）</label>
+  <label class="check"><input type="checkbox" id="asciiName"> 檔名只保留英數（較相容遊戲引擎；中文等字元會被替換為底線，全中文檔名則改為隨機代號）</label>
   <div class="actions" style="margin-top:10px">
     <button class="ghost" id="btnCheck">檢查倉庫權限</button>
     <span id="repoMsg" class="status"></span>
   </div>
 </section>
 
-<!-- ③ 上傳 -->
+<!-- ③ 瀏覽／移動／刪除 -->
 <section class="card">
-  <h2>③ 批次選取與上傳</h2>
-  <div class="row" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-bottom:12px">
-    <div>
-      <label>同時上傳數（建議 1）</label>
-      <select id="concurrency">
-        <option value="1">1 張一張上傳（最穩定，建議）</option>
-        <option value="2">2 張同時上傳（較快，但失敗率較高）</option>
-      </select>
-    </div>
-    <div>
-      <label>失敗自動重試次數（預設 5，範圍 0 到 10）</label>
-      <input type="number" id="retryMax" min="0" max="10" value="5">
-    </div>
+  <h2>③ 瀏覽倉庫圖片（縮圖預覽、移動、刪除）</h2>
+  <div class="toolbar">
+    <button class="ghost" id="btnUp">⬆ 上一層</button>
+    <button class="ghost" id="btnRoot">🏠 根目錄</button>
+    <button class="ghost" id="btnGoDest">📂 跳到上傳目的地</button>
+    <button class="ghost" id="btnRefresh">🔄 重新整理</button>
+    <label class="check" style="margin:0"><input type="checkbox" id="brRecursive"> 包含子資料夾的圖片</label>
   </div>
-  <div id="drop">
-    把圖片拖曳到這裡、點擊選取，或直接 Ctrl+V 貼上截圖<br>
+  <div id="crumb" class="crumb"></div>
+  <div id="brMsg" class="status"></div>
+  <div id="folders" class="folders"></div>
+  <div class="toolbar">
+    <label class="check" style="margin:0"><input type="checkbox" id="brAll"> 全選</label>
+    <span id="brCount" class="hint"></span>
+    <button class="ghost" id="btnCopySelMd">複製選取（Markdown）</button>
+    <button class="ghost" id="btnCopySelUrl">複製選取（純網址）</button>
+    <button class="ghost" id="btnUseDest">設為上傳目的地</button>
+  </div>
+  <div class="toolbar">
+    <input type="text" id="mvDest" list="dirList" placeholder="移動到的資料夾，例：characters/fire_mage（留空＝根目錄，可跨分類）">
+    <datalist id="dirList"></datalist>
+    <button id="btnMove">📦 移動選取</button>
+    <button class="danger" id="btnDelete">🗑 永久刪除選取</button>
+  </div>
+  <div id="grid" class="grid"></div>
+  <div class="toolbar">
+    <span id="mapCount" class="hint"></span>
+    <button class="ghost" id="btnMapJson">下載路徑對照表（JSON）</button>
+    <button class="ghost" id="btnMapCsv">下載路徑對照表（CSV）</button>
+    <button class="ghost" id="btnMapClear">清空對照紀錄</button>
+  </div>
+  <p class="hint">⚠️ 移動或刪除會改變圖片網址，遊戲中寫死的舊路徑會失效。操作後請下載路徑對照表，供遊戲端更新。刪除為永久刪除（需二次確認），GitHub 歷史中仍保有舊版但最新版本會移除。對照紀錄只存在本機瀏覽器，請定期下載備份。移動與刪除以單一 commit 完成，失敗時不會留下半完成的狀態。</p>
+  <p class="hint">縮圖直接讀取 GitHub 原始檔（新上傳的圖片不會因 CDN 快取而延遲顯示）。私人倉庫的圖片無法在此顯示。點縮圖可放大，支援左右鍵切換與 Esc 關閉。</p>
+</section>
+
+<!-- ④ 批次上傳 -->
+<section class="card">
+  <h2>④ 批次選取與上傳</h2>
+  <div id="drop" role="button" tabindex="0" aria-label="選取或拖曳圖片">
+    把圖片拖曳到這裡、點擊或按 Enter 選取，或直接 Ctrl+V 貼上截圖<br>
     <span class="hint">支援 PNG／JPG／GIF／WEBP／SVG／BMP／ICO／AVIF，可一次選多張，單檔上限 25MB</span>
   </div>
   <input type="file" id="picker" multiple accept="image/*,.svg,.ico,.avif" hidden>
-  <div class="actions" style="margin-top:12px">
+  <label class="check"><input type="checkbox" id="allowDup"> 允許重複加入（關閉時會略過與清單、歷史或倉庫內容相同的圖片）</label>
+  <div class="actions" style="margin-top:8px">
     <button id="btnUpload">開始批次上傳</button>
+    <button class="danger" id="btnStop" hidden>停止（提交已完成的部分）</button>
     <button class="ghost" id="btnRetry">重試失敗項目</button>
     <button class="ghost" id="btnClearDone">清除已完成</button>
     <button class="danger" id="btnClearAll">全部清空</button>
     <span id="count" class="hint"></span>
   </div>
+  <div id="progress" class="progress-box" hidden>
+    <div id="stage" class="status"></div>
+    <div class="bar"><div id="overallBar" style="width:0%"></div></div>
+    <div id="stats" class="stats"></div>
+  </div>
   <div id="uploadMsg" class="status"></div>
+  <p class="hint">⚠️ 公開倉庫的圖片任何人都看得到，請勿上傳個人照片或未授權素材。每批以 Git Data API 建立單一 commit（超過「每個 commit 最多張數」會自動分批）。待上傳的原檔會暫存於瀏覽器 IndexedDB，清除網站資料即會消失。</p>
   <div id="list" class="list"></div>
 </section>
 
-<!-- ④ 結果 -->
+<!-- ⑤ 上傳結果 -->
 <section class="card">
-  <h2>④ 上傳結果（可直接貼進遊戲）</h2>
+  <h2>⑤ 上傳結果（可直接貼進遊戲）</h2>
   <div class="actions">
     <button class="ghost" data-fmt="plain">純網址</button>
     <button class="ghost" data-fmt="md">Markdown</button>
@@ -153,416 +223,1138 @@ ol li{margin:4px 0;font-size:14px}
     <button id="btnCopyOut">複製全部</button>
   </div>
   <textarea id="out" rows="8" style="margin-top:10px;font-family:ui-monospace,Consolas,monospace;font-size:12px"></textarea>
+  <div id="strip" class="strip"></div>
 </section>
 
-<!-- ⑤ 歷史 -->
+<!-- ⑥ 歷史 -->
 <section class="card">
-  <h2>⑤ 歷史紀錄（最近 100 筆）</h2>
+  <h2>⑥ 歷史紀錄（最近 100 筆）</h2>
   <div class="actions"><button class="ghost" id="btnHistClear">清空歷史</button></div>
   <div id="hist" class="list"></div>
 </section>
 
-<!-- 說明 -->
+<!-- ⑦ 說明 -->
 <section class="card">
   <h2>使用說明</h2>
   <ol>
     <li>到 GitHub 建立一個 <b>公開（Public）</b>倉庫，例如 <code>game-assets</code>，並確認已有至少一個 commit（可勾選 Add a README）。</li>
-    <li>建立 Token：Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Repository access 選「Only select repositories」選剛才的倉庫 → Permissions → <b>Contents：Read and write</b>。</li>
-    <li>把 Token 貼到 ① 並按「登入驗證」，再於 ② 填入 owner、repo，按「檢查倉庫權限」。</li>
-    <li>選擇分類（傭兵／角色／動態精靈／寵物），把整批圖片拖進 ③，按「開始批次上傳」。</li>
-    <li>在 ④ 選擇「純網址」或「JSON」複製，貼進遊戲的圖片路徑即可。</li>
+    <li>建立 Token：Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Repository access 選「Only select repositories」並選取該倉庫 → Permissions → <b>Contents：Read and write</b>。</li>
+    <li>在 ① 貼上 Token 並登入（想保留登入狀態再勾「記住 Token」），在 ② 填入 owner、repo，按「檢查倉庫權限」。</li>
+    <li>在 ③ 瀏覽資料夾、勾選圖片後可「移動」或「永久刪除」。移動時若目的地有同名檔案，會自動加上 _2、_3 後綴。</li>
+    <li>操作後到 ③ 下載「路徑對照表」，遊戲端依表更新圖片路徑。</li>
+    <li>在 ④ 拖入整批圖片，按「開始批次上傳」。內容與倉庫相同的圖片會自動沿用既有連結，不會重複上傳。</li>
+    <li>在 ⑤ 選擇「純網址」或「JSON」複製，貼進遊戲的圖片路徑即可。</li>
   </ol>
-  <p class="hint">注意：私人（Private）倉庫的圖片無法被遊戲直接載入，請使用公開倉庫。每張圖會產生一個 commit。GitHub 對內容建立有次數上限（約每分鐘 80 次、每小時 500 次），大量上傳請分批進行。</p>
+  <p class="hint">注意：私人（Private）倉庫的圖片無法被遊戲直接載入，請使用公開倉庫。GitHub 對內容建立有次數上限（約每分鐘 80 次、每小時 500 次），大量上傳請分批進行。</p>
 </section>
 
+</main>
+
+<!-- 燈箱 -->
+<div id="lb" class="lb" hidden role="dialog" aria-modal="true" aria-label="圖片檢視">
+  <div class="lb-box">
+    <button class="lb-x" id="lbClose" aria-label="關閉">✕</button>
+    <button class="lb-nav" id="lbPrev" aria-label="上一張">‹</button>
+    <img id="lbImg" alt="">
+    <button class="lb-nav" id="lbNext" aria-label="下一張">›</button>
+    <div class="lb-info">
+      <div id="lbName" class="lb-cap"></div>
+      <div id="lbUrl" class="url"></div>
+      <div class="actions" style="margin-top:6px">
+        <button id="lbCopy">複製連結</button>
+        <button class="ghost" id="lbMd">複製 Markdown</button>
+        <button class="ghost" id="lbOpen">開新分頁</button>
+      </div>
+    </div>
+  </div>
 </div>
+<div id="toast" class="toast" hidden></div>
 
 <script>
+/* ================= 常數與工具 ================= */
 const $ = s => document.querySelector(s);
 const API = 'https://api.github.com';
-const LS = { token:'gh_up_token', cfg:'gh_up_cfg', hist:'gh_up_hist' };
+const TK = 'gh_up_token';
+const LS = { remember:'gh_up_remember', cfg:'gh_up_cfg', hist:'gh_up_hist', map:'gh_up_map' };
+const DB_NAME = 'gh_up_v3', STORE = 'queue';
 const EXT_OK = /\.(png|jpe?g|gif|webp|svg|bmp|ico|avif)$/i;
 const MAX_BYTES = 25 * 1024 * 1024;
-const GAP_MS = 1500;                              // 每張之間的間隔，降低觸發速率限制的機率
-const RETRY_STATUS = [408, 409, 423, 425, 429];   // 暫時性錯誤，會自動重試
-const CFG_IDS = ['owner','repo','branch','category','sub','linkMode','autoRename','concurrency','retryMax'];
-let files = [];       // {id,file,name,thumb,status:'wait'|'uploading'|'done'|'error',path,url,dims,error,attempt,maxAttempts}
-let seq = 0;
-let outFmt = 'plain';
+const JSD_MAX = 20 * 1024 * 1024;
+const GAP_MS = 1100;                 // 每個 blob 之間的間隔（約 55 次/分，低於內容建立的每分鐘 80 次限制）
+const THUMB_PX = 160;
+const RETRY_STATUS = [408, 409, 423, 425, 429];
+const CFG_IDS = ['owner','repo','branch','category','sub','linkMode','autoRename','asciiName','chunkSize','retryMax'];
+const CACHE_TTL = 5 * 60 * 1000;
+const BROWSE_LIMIT = 500;
+const OP_CHUNK = 150;                // 移動／刪除每個 commit 最多處理的圖片數
 
-const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const enc = s => encodeURIComponent(s);
 const encPath = p => p.split('/').map(encodeURIComponent).join('/');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const fmtSize = b => b >= 1048576 ? (b/1048576).toFixed(1)+' MB' : (b/1024).toFixed(0)+' KB';
-function say(sel, text, cls=''){ const el=$(sel); el.textContent=text; el.className='status '+cls; }
-function btn(text, fn, cls=''){ const b=document.createElement('button'); b.textContent=text; if(cls) b.className=cls; b.onclick=fn; return b; }
-function gh(extra={}){
-  return { Authorization:'Bearer '+localStorage.getItem(LS.token), Accept:'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28', ...extra };
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+const nat = (a, b) => a.localeCompare(b, 'zh-Hant', { numeric: true });
+const isP2 = n => n > 0 && (n & (n - 1)) === 0;
+const fmtSize = b => b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(0, b / 1024).toFixed(0) + ' KB';
+const fmtTime = s => { if (!isFinite(s) || s <= 0) return '計算中'; const m = Math.floor(s / 60), r = Math.floor(s % 60); return m ? `${m} 分 ${r} 秒` : `${r} 秒`; };
+const base = c => `${API}/repos/${enc(c.owner)}/${enc(c.repo)}`;
+const estB64 = size => Math.ceil(size / 3) * 4;
+const parentOf = p => p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '';
+const nowTxt = () => new Date().toLocaleString('zh-TW', { hour12: false });
+const stamp = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`; };
+
+// 安全建立 DOM（不使用 innerHTML，避免檔名等字串被當成 HTML 解析）
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v === false || v == null) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) { if (c == null || c === false) continue; n.append(c instanceof Node ? c : String(c)); }
+  return n;
+}
+function say(sel, text, cls = '') { const e = $(sel); e.textContent = text; e.className = 'status ' + cls; }
+let toastTimer = 0;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 1800); }
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const t = el('textarea', { readonly: true }); t.value = text; t.style.cssText = 'position:fixed;opacity:0';
+    document.body.append(t); t.select(); try { document.execCommand('copy'); } catch (_) {} t.remove();
+  }
+  toast('已複製到剪貼簿');
+}
+function download(name, text, type) {
+  const a = el('a', { href: URL.createObjectURL(new Blob([text], { type })), download: name });
+  document.body.append(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
 
-/* ---------- 設定儲存 ---------- */
-function saveCfg(){
-  const c={}; CFG_IDS.forEach(k=>{ const el=$('#'+k); c[k]= el.type==='checkbox' ? el.checked : el.value; });
+/* ================= 設定與 Token ================= */
+const getToken = () => sessionStorage.getItem(TK) || localStorage.getItem(TK) || '';
+function storeToken(t, remember) {
+  sessionStorage.removeItem(TK); localStorage.removeItem(TK);
+  if (t) (remember ? localStorage : sessionStorage).setItem(TK, t);
+}
+function saveCfg() {
+  const c = {}; CFG_IDS.forEach(k => { const e = $('#' + k); c[k] = e.type === 'checkbox' ? e.checked : e.value; });
   localStorage.setItem(LS.cfg, JSON.stringify(c));
 }
-function loadCfg(){
-  try{
-    const c=JSON.parse(localStorage.getItem(LS.cfg)||'{}');
-    CFG_IDS.forEach(k=>{ if(c[k]===undefined) return; const el=$('#'+k); if(el.type==='checkbox') el.checked=c[k]; else el.value=c[k]; });
-  }catch(e){}
+function loadCfg() {
+  try {
+    const c = JSON.parse(localStorage.getItem(LS.cfg) || '{}');
+    CFG_IDS.forEach(k => { if (c[k] === undefined) return; const e = $('#' + k); if (e.type === 'checkbox') e.checked = !!c[k]; else e.value = c[k]; });
+  } catch (e) {}
 }
-function readCfg(){
+function readCfg() {
   saveCfg();
-  const rm = parseInt($('#retryMax').value, 10);
-  const cc = parseInt($('#concurrency').value, 10);
+  const rm = parseInt($('#retryMax').value, 10), cs = parseInt($('#chunkSize').value, 10);
   return {
-    owner:$('#owner').value.trim(), repo:$('#repo').value.trim(), branch:$('#branch').value.trim()||'main',
-    category:$('#category').value, sub:$('#sub').value.trim(), linkMode:$('#linkMode').value,
-    autoRename:$('#autoRename').checked,
-    retryMax: isNaN(rm) ? 5 : Math.min(10, Math.max(0, rm)),
-    concurrency: cc === 2 ? 2 : 1
+    owner: $('#owner').value.trim(), repo: $('#repo').value.trim(), branch: $('#branch').value.trim() || 'main',
+    category: $('#category').value, sub: $('#sub').value.trim(), linkMode: $('#linkMode').value,
+    autoRename: $('#autoRename').checked, asciiName: $('#asciiName').checked,
+    retryMax: isNaN(rm) ? 5 : clamp(rm, 0, 10), chunkSize: isNaN(cs) ? 100 : clamp(cs, 1, 500)
   };
 }
 
-/* ---------- 登入 ---------- */
-async function login(){
-  const t = $('#token').value.trim() || localStorage.getItem(LS.token) || '';
-  if(!t) return say('#loginMsg','請先貼上 Token','err');
-  localStorage.setItem(LS.token, t);
-  say('#loginMsg','驗證中…');
-  try{
-    const r = await fetch(API+'/user', {headers:gh()});
-    if(!r.ok) throw new Error(r.status===401 ? 'Token 無效或已過期' : 'HTTP '+r.status);
-    const u = await r.json();
-    const img=document.createElement('img');
-    img.src=u.avatar_url; img.width=28; img.style.cssText='border-radius:50%;vertical-align:middle;margin-right:6px';
-    const sp=document.createElement('span'); sp.textContent='已登入：'+u.login;
-    $('#who').textContent=''; $('#who').append(img, sp);
-    if(!$('#owner').value){ $('#owner').value=u.login; saveCfg(); }
-    $('#token').value='';
-    say('#loginMsg','登入成功，Token 已保存在本機瀏覽器','ok');
-  }catch(e){
-    localStorage.removeItem(LS.token);
-    say('#loginMsg','登入失敗：'+e.message,'err');
-  }
-}
-function logout(){
-  localStorage.removeItem(LS.token);
-  $('#who').textContent='尚未登入';
-  say('#loginMsg','已登出，並清除本機 Token');
-}
-
-/* ---------- 檢查倉庫 ---------- */
-async function checkRepo(){
-  const c=readCfg();
-  if(!localStorage.getItem(LS.token)) return say('#repoMsg','請先登入','err');
-  if(!c.owner||!c.repo) return say('#repoMsg','請填寫 owner 與 repo','err');
-  try{
-    const r = await fetch(`${API}/repos/${enc(c.owner)}/${enc(c.repo)}`, {headers:gh()});
-    if(r.status===404) throw new Error('找不到倉庫，或 Token 沒有存取此倉庫的權限');
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const d = await r.json();
-    if(d.permissions && d.permissions.push===false) throw new Error('此 Token 只有讀取權限，請加上 Contents: Read and write');
-    let text = `✅ 倉庫可用（預設分支：${d.default_branch}）`;
-    if(d.private) text += '　⚠️ 這是私人倉庫，遊戲無法直接載入圖片，建議改為公開';
-    say('#repoMsg', text, d.private ? 'err' : 'ok');
-  }catch(e){ say('#repoMsg','檢查失敗：'+e.message,'err'); }
-}
-
-/* ---------- 檔名與路徑 ---------- */
-function safeName(name){
+/* ================= 路徑與連結 ================= */
+function cleanDir(s) { return s.split(/[\\/]+/).map(x => x.trim().replace(/[^\p{L}\p{N}_-]+/gu, '_')).filter(Boolean).join('/'); }
+const destDir = c => [c.category, cleanDir(c.sub)].filter(Boolean).join('/');
+function safeName(name, ascii) {
   const m = name.match(/^(.*?)(\.[^.]*)?$/);
-  const base = (m[1]||'').replace(/[^\p{L}\p{N}_-]+/gu,'_').replace(/^_+|_+$/g,'');
-  const ext  = (m[2]||'').toLowerCase().replace(/[^.a-z0-9]/g,'');
-  return (base||'img') + ext;
+  const ext = (m[2] || '').toLowerCase().replace(/[^.a-z0-9]/g, '');
+  let b = m[1] || '';
+  b = ascii ? b.normalize('NFKD').replace(/[^A-Za-z0-9_-]+/g, '_') : b.replace(/[^\p{L}\p{N}_-]+/gu, '_');
+  b = b.replace(/^_+|_+$/g, '');
+  if (!b) b = 'img' + Math.random().toString(36).slice(2, 8);
+  return b + ext;
 }
-function cleanDir(s){
-  return s.split(/[\\/]+/).map(x=>x.trim().replace(/[^\p{L}\p{N}_-]+/gu,'_')).filter(Boolean).join('/');
+function buildPath(name, c) {
+  let fn = safeName(name, c.asciiName);
+  if (c.autoRename) fn = `${stamp()}_${Math.random().toString(36).slice(2, 6)}_${fn}`;
+  return destDir(c) + '/' + fn;
 }
-function buildPath(name, cfg){
-  const dir = [cfg.category, cleanDir(cfg.sub)].filter(Boolean).join('/');
-  let fn = safeName(name);
-  if(cfg.autoRename){
-    const p=n=>String(n).padStart(2,'0'), d=new Date();
-    const ts = `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
-    fn = `${ts}_${Math.random().toString(36).slice(2,6)}_${fn}`;
-  }
-  return dir + '/' + fn;
-}
-function makeLink(path, cfg){
-  const o=enc(cfg.owner), r=enc(cfg.repo), b=encPath(cfg.branch), p=encPath(path);
-  return cfg.linkMode==='cdn'
+// mode: 'raw' 或 'cdn'；預設依設定。raw 連結用於預覽（即時），cdn 用於遊戲
+function makeLink(path, c, mode = c.linkMode) {
+  const o = enc(c.owner), r = enc(c.repo), b = encPath(c.branch), p = encPath(path);
+  return mode === 'cdn'
     ? `https://cdn.jsdelivr.net/gh/${o}/${r}@${b}/${p}`
     : `https://raw.githubusercontent.com/${o}/${r}/${b}/${p}`;
 }
+const rawUrl = (path, c) => makeLink(path, c, 'raw');
 
-/* ---------- 加入佇列 ---------- */
-function addFiles(list){
-  const skipped=[];
-  for(const f of list){
-    if(!(f.type.startsWith('image/') || EXT_OK.test(f.name))){ skipped.push(f.name); continue; }
-    const it={ id:++seq, file:f, name:f.name||'paste.png', thumb:URL.createObjectURL(f), status:'wait', path:'', url:'', dims:'', error:'', attempt:0, maxAttempts:0 };
-    files.push(it);
-    probe(it);
+/* ================= GitHub 呼叫（XHR，可取得上傳進度） ================= */
+function errText(status, data) {
+  const m = (data && data.message) || '';
+  if (status === 409 && /empty/i.test(m)) return '倉庫是空的：請先在 GitHub 建立至少一個 commit（可勾選 Add a README）';
+  if (status === 422 && /sha/i.test(m)) return '同名檔案已存在（請開啟「自動加時間戳記」或更換檔名）';
+  if (status === 409) return 'GitHub 同時寫入衝突';
+  if ((status === 403 || status === 429) && /rate limit|abuse|secondary/i.test(m)) return 'GitHub 速率限制';
+  if (status === 401) return 'Token 無效或已過期';
+  if (status === 404) return '找不到資源（倉庫、分支或路徑不存在，或 Token 無權限）';
+  return m || ('HTTP ' + status);
+}
+function parseWait(h) {
+  const ra = Number(h.get('retry-after')); if (ra > 0) return ra * 1000;
+  const reset = Number(h.get('x-ratelimit-reset'));
+  if (h.get('x-ratelimit-remaining') === '0' && reset > 0) return Math.max(0, reset * 1000 - Date.now()) + 1000;
+  return 0;
+}
+function xhrJSON(method, url, body, onUp) {
+  return new Promise((resolve, reject) => {
+    const x = new XMLHttpRequest();
+    x.open(method, url, true);
+    x.timeout = 120000;
+    x.setRequestHeader('Authorization', 'Bearer ' + getToken());
+    x.setRequestHeader('Accept', 'application/vnd.github+json');
+    x.setRequestHeader('X-GitHub-Api-Version', '2022-11-28');
+    if (body !== undefined) x.setRequestHeader('Content-Type', 'application/json');
+    if (onUp) x.upload.onprogress = e => onUp(e.loaded, e.lengthComputable ? e.total : 0);
+    x.onload = () => {
+      let data = {}; try { data = JSON.parse(x.responseText || '{}'); } catch (e) {}
+      resolve({ ok: x.status >= 200 && x.status < 300, status: x.status, data, headers: { get: n => x.getResponseHeader(n) } });
+    };
+    x.onerror = () => reject(new Error('網路連線失敗'));
+    x.ontimeout = () => reject(new Error('連線逾時'));
+    x.send(body === undefined ? null : JSON.stringify(body));
+  });
+}
+// 統一呼叫＋自動重試（指數退避，尊重 Retry-After 與速率限制標頭）
+async function ghCall(method, url, body, opt = {}) {
+  const max = opt.retries ?? 5;
+  for (let attempt = 1; ; attempt++) {
+    let res = null, msg = '', retryable = false, waitMs = 0;
+    try {
+      res = await xhrJSON(method, url, body, opt.onUp);
+      if (res.ok) return res;
+      msg = errText(res.status, res.data);
+      const limited = (res.status === 403 || res.status === 429) &&
+        (/rate limit|abuse|secondary/i.test(res.data.message || '') || res.headers.get('x-ratelimit-remaining') === '0');
+      // 409 在讀取時多半是「空倉庫」等永久狀況，只對寫入操作重試
+      const transient = RETRY_STATUS.includes(res.status) && !(res.status === 409 && method === 'GET');
+      retryable = transient || limited || res.status >= 500;
+      waitMs = parseWait(res.headers);
+    } catch (e) { msg = e.message; retryable = true; }
+    if (!retryable || attempt > max) {
+      const err = new Error(msg); err.status = res ? res.status : 0; throw err;
+    }
+    const wait = Math.min(900000, Math.max(Math.min(60000, 2000 * 2 ** (attempt - 1)), waitMs));
+    opt.onRetry?.({ attempt, max: max + 1, msg, sec: Math.ceil(wait / 1000) });
+    await sleep(wait);
   }
-  renderList(); updateOut();
-  if(skipped.length) say('#uploadMsg','已略過非圖片檔：'+skipped.join('、'),'err');
-}
-function probe(it){
-  const im=new Image();
-  im.onload=()=>{ it.dims=`${im.naturalWidth}×${im.naturalHeight}`; renderList(); };
-  im.src=it.thumb;
-}
-function removeItem(id){
-  const i=files.findIndex(f=>f.id===id); if(i<0) return;
-  URL.revokeObjectURL(files[i].thumb); files.splice(i,1);
-  renderList(); updateOut();
 }
 
-/* ---------- 上傳核心 ---------- */
-function toBase64(file){
-  return new Promise((res,rej)=>{
-    const fr=new FileReader();
-    fr.onload=()=>res(fr.result.split(',')[1]);
-    fr.onerror=()=>rej(new Error('讀取檔案失敗'));
+/* ================= 登入與倉庫檢查 ================= */
+async function login() {
+  const t = $('#token').value.trim() || getToken();
+  if (!t) return say('#loginMsg', '請先貼上 Token', 'err');
+  const remember = $('#remember').checked;
+  storeToken(t, remember);
+  say('#loginMsg', '驗證中…');
+  try {
+    const u = (await ghCall('GET', `${API}/user`, undefined, { retries: 1 })).data;
+    $('#who').replaceChildren(
+      el('img', { src: u.avatar_url, width: 28, alt: '', style: 'border-radius:50%;vertical-align:middle;margin-right:6px' }),
+      el('span', { text: '已登入：' + u.login }));
+    if (!$('#owner').value) { $('#owner').value = u.login; saveCfg(); }
+    $('#token').value = '';
+    say('#loginMsg', `登入成功，Token 保存於${remember ? '本機瀏覽器（已記住）' : '本分頁（關閉分頁即失效）'}`, 'ok');
+  } catch (e) {
+    if (e.status === 401) storeToken('', false);
+    say('#loginMsg', '登入失敗：' + e.message, 'err');
+  }
+  renderBrowser();
+}
+function logout() {
+  storeToken('', false);
+  $('#who').textContent = '尚未登入';
+  repo = emptyRepo(); br.sel.clear(); br.files = []; br.model = null;
+  say('#loginMsg', '已登出，並清除本機與本分頁的 Token');
+  renderBrowser();
+}
+async function checkRepo() {
+  const c = readCfg();
+  if (!getToken()) return say('#repoMsg', '請先登入', 'err');
+  if (!c.owner || !c.repo) return say('#repoMsg', '請填寫 owner 與 repo', 'err');
+  say('#repoMsg', '檢查中…');
+  try {
+    const d = (await ghCall('GET', base(c), undefined, { retries: 1 })).data;
+    if (d.permissions && d.permissions.push === false) throw new Error('此 Token 只有讀取權限，請加上 Contents: Read and write');
+    let text = `✅ 倉庫可用（預設分支：${d.default_branch}）`;
+    if (d.private) text += '　⚠️ 私人倉庫：遊戲與縮圖都無法直接載入，建議改為公開';
+    say('#repoMsg', text, d.private ? 'warn' : 'ok');
+    repo = emptyRepo();
+    renderBrowser();
+  } catch (e) { say('#repoMsg', '檢查失敗：' + e.message, 'err'); }
+}
+
+/* ================= 倉庫檔案快取（Git Trees API） ================= */
+let repo = emptyRepo();
+function emptyRepo() { return { key: '', entries: new Map(), shaIndex: new Map(), truncated: false, ts: 0 }; }
+const repoKey = c => `${c.owner}/${c.repo}@${c.branch}`;
+function reindex() {
+  repo.shaIndex = new Map();
+  for (const [p, m] of repo.entries) if (!repo.shaIndex.has(m.sha)) repo.shaIndex.set(m.sha, p);
+}
+async function loadTree(c, force = false) {
+  const key = repoKey(c);
+  if (!force && repo.key === key && Date.now() - repo.ts < CACHE_TTL) return repo;
+  const r = await ghCall('GET', `${base(c)}/git/trees/${encPath(c.branch)}?recursive=1`, undefined, { retries: c.retryMax });
+  const next = emptyRepo();
+  next.key = key; next.ts = Date.now(); next.truncated = !!r.data.truncated;
+  for (const n of (r.data.tree || [])) {
+    if (n.type !== 'blob') continue;
+    next.entries.set(n.path, { sha: n.sha, size: n.size || 0, mode: n.mode || '100644' });
+  }
+  repo = next; reindex();
+  return repo;
+}
+
+/* ================= ③ 資料夾瀏覽與縮圖 ================= */
+const br = { path: '', sel: new Set(), files: [], model: null, seq: 0 };
+function go(p) { br.path = p; br.sel.clear(); renderBrowser(); }
+function renderCrumb() {
+  const parts = br.path ? br.path.split('/') : [];
+  $('#crumb').replaceChildren(
+    el('button', { onclick: () => go('') }, '🏠 根目錄'),
+    ...parts.flatMap((p, i) => [el('span', { text: '/' }), el('button', { onclick: () => go(parts.slice(0, i + 1).join('/')) }, p)]));
+  $('#btnUp').disabled = !br.path;
+  $('#btnRoot').disabled = !br.path;
+}
+async function buildModel(c, path, recursive) {
+  const tree = await loadTree(c);
+  if (tree.truncated) {
+    // 倉庫過大，Tree 已截斷：改用 Contents API 逐層讀取（此時不支援移動與刪除）
+    let arr = [];
+    try {
+      const r = await ghCall('GET', `${base(c)}/contents/${encPath(path)}?ref=${encPath(c.branch)}`, undefined, { retries: c.retryMax });
+      arr = Array.isArray(r.data) ? r.data : [];
+    } catch (e) { if (e.status !== 404) throw e; }
+    return {
+      folders: arr.filter(x => x.type === 'dir').sort((a, b) => nat(a.name, b.name)).map(x => ({ name: x.name, path: x.path, count: null })),
+      files: arr.filter(x => x.type === 'file' && EXT_OK.test(x.name)).sort((a, b) => nat(a.name, b.name))
+        .map(x => ({ name: x.name, path: x.path, size: x.size || 0, sha: x.sha })),
+      note: '倉庫檔案數超過 GitHub Tree 上限，改為逐層讀取（不支援「包含子資料夾」，也無法移動或刪除）。'
+    };
+  }
+  const prefix = path ? path + '/' : '';
+  const fm = new Map(), files = [];
+  for (const [p, meta] of tree.entries) {
+    if (!p.startsWith(prefix) || !EXT_OK.test(p)) continue;
+    const rest = p.slice(prefix.length), i = rest.indexOf('/');
+    if (i >= 0 && !recursive) { const f = rest.slice(0, i); fm.set(f, (fm.get(f) || 0) + 1); continue; }
+    files.push({ name: rest, path: p, size: meta.size, sha: meta.sha });
+  }
+  const folders = [...fm.entries()].sort((a, b) => nat(a[0], b[0])).map(([name, count]) => ({ name, path: prefix + name, count }));
+  files.sort((a, b) => nat(a.name, b.name));
+  let note = '';
+  if (!folders.length && !files.length) note = '此資料夾目前沒有圖片';
+  if (files.length > BROWSE_LIMIT) note = `共 ${files.length} 張，目前顯示前 ${BROWSE_LIMIT} 張（請進入子資料夾或縮小範圍）`;
+  return { folders, files: files.slice(0, BROWSE_LIMIT), note };
+}
+function fillDirList() {
+  const dirs = new Set();
+  for (const p of repo.entries.keys()) {
+    const parts = p.split('/');
+    for (let i = 1; i < parts.length; i++) dirs.add(parts.slice(0, i).join('/'));
+  }
+  $('#dirList').replaceChildren(...[...dirs].sort(nat).slice(0, 500).map(d => el('option', { value: d })));
+}
+async function renderBrowser() {
+  const c = readCfg();
+  renderCrumb();
+  updateMapCount();
+  const seq = ++br.seq;
+  if (!getToken() || !c.owner || !c.repo) {
+    $('#folders').replaceChildren();
+    $('#grid').replaceChildren(el('p', { class: 'empty', text: '請先完成 ① 登入與 ② 倉庫設定，即可瀏覽圖片。' }));
+    br.files = []; br.model = null; updateSel();
+    return say('#brMsg', '');
+  }
+  say('#brMsg', '載入中…');
+  try {
+    const m = await buildModel(c, br.path, $('#brRecursive').checked);
+    if (seq !== br.seq) return;
+    br.model = m;
+    if (!repo.truncated) fillDirList();
+    paint(c, m);
+    say('#brMsg', m.note, m.note ? 'warn' : '');
+  } catch (e) {
+    if (seq !== br.seq) return;
+    br.model = null; $('#folders').replaceChildren(); $('#grid').replaceChildren(); br.files = []; updateSel();
+    say('#brMsg', '讀取失敗：' + e.message + (e.status === 404 ? '（請確認 owner／repo／分支是否正確）' : ''), 'err');
+  }
+}
+function paint(c, m) {
+  br.files = m.files;
+  $('#folders').replaceChildren(...m.folders.map(f => el('button', { class: 'folder', onclick: () => go(f.path) },
+    el('div', { text: '📁 ' + f.name }),
+    el('div', { class: 'hint', text: f.count == null ? '資料夾' : `${f.count} 張圖片` }))));
+  $('#grid').replaceChildren(...m.files.map((f, i) => tile(f, i, c, m.files)));
+  updateSel();
+}
+function tile(f, i, c, list) {
+  const cb = el('input', { type: 'checkbox', class: 'sel', 'aria-label': '選取 ' + f.name,
+    onchange: e => { e.target.checked ? br.sel.add(f.path) : br.sel.delete(f.path); updateSel(); } });
+  cb.checked = br.sel.has(f.path);
+  const img = el('img', { src: rawUrl(f.path, c), alt: f.name, loading: 'lazy', decoding: 'async',
+    onerror: () => img.replaceWith(el('div', { class: 'ph', text: '無法預覽' })) });
+  return el('div', { class: 'tile' }, cb,
+    el('button', { class: 'thumb', 'aria-label': '放大檢視 ' + f.name,
+      onclick: () => openLb(list.map(x => ({ name: x.name, url: makeLink(x.path, c), view: rawUrl(x.path, c) })), i) }, img),
+    el('div', { class: 'nm', title: f.path, text: f.name }));
+}
+function updateSel() {
+  const n = br.sel.size;
+  $('#brCount').textContent = `${br.files.length} 張圖片${n ? `，已選 ${n} 張` : ''}`;
+  $('#brAll').checked = br.files.length > 0 && br.files.every(f => br.sel.has(f.path));
+}
+function copySel(fmt) {
+  const c = readCfg();
+  const paths = [...br.sel];
+  if (!paths.length) return say('#brMsg', '請先勾選要複製的圖片', 'warn');
+  copy(paths.map(p => { const url = makeLink(p, c), name = p.split('/').pop(); return fmt === 'md' ? `![${name}](${url})` : url; }).join('\n'));
+}
+
+/* ================= ③ 移動與刪除 ================= */
+// 同名時自動加後綴：name.png → name_2.png → name_3.png …
+function uniqueDest(dir, name, taken) {
+  const m = name.match(/^(.*?)(\.[^.]*)?$/), b = m[1] || name, e = m[2] || '';
+  let k = 1, cand = name;
+  for (;;) {
+    const p = dir ? `${dir}/${cand}` : cand;
+    if (!taken.has(p)) { taken.add(p); return p; }
+    k++; cand = `${b}_${k}${e}`;
+  }
+}
+function planMove(paths, dest) {
+  const taken = new Set(repo.entries.keys());
+  const ops = [], skipped = [];
+  for (const from of paths) {
+    const name = from.split('/').pop(), meta = repo.entries.get(from);
+    if (!meta) { skipped.push(name + '（已不存在）'); continue; }
+    if (parentOf(from) === dest) { skipped.push(name + '（已在該資料夾）'); continue; }
+    const to = uniqueDest(dest, name, taken);
+    ops.push({ type: 'move', from, to, sha: meta.sha, size: meta.size, mode: meta.mode || '100644', renamed: to.split('/').pop() !== name });
+  }
+  return { ops, skipped };
+}
+function planDelete(paths) {
+  const ops = [], skipped = [];
+  for (const from of paths) {
+    const meta = repo.entries.get(from);
+    if (!meta) { skipped.push(from.split('/').pop() + '（已不存在）'); continue; }
+    ops.push({ type: 'delete', from, size: meta.size, mode: meta.mode || '100644' });
+  }
+  return { ops, skipped };
+}
+// 一個 commit 內同時處理移動（新增＋刪除舊路徑）與刪除；每個 blob 不重新上傳
+async function commitOps(chunk, c, msg) {
+  const B = base(c), bp = encPath(c.branch);
+  const tree = chunk.flatMap(o => o.type === 'move'
+    ? [{ path: o.to, mode: o.mode, type: 'blob', sha: o.sha }, { path: o.from, mode: o.mode, type: 'blob', sha: null }]
+    : [{ path: o.from, mode: o.mode, type: 'blob', sha: null }]);
+  let last = null;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const o = { retries: c.retryMax };
+      const parent = (await ghCall('GET', `${B}/git/ref/heads/${bp}`, undefined, o)).data.object.sha;
+      const baseTree = (await ghCall('GET', `${B}/git/commits/${parent}`, undefined, o)).data.tree.sha;
+      const t = (await ghCall('POST', `${B}/git/trees`, { base_tree: baseTree, tree }, o)).data.sha;
+      const cm = (await ghCall('POST', `${B}/git/commits`, { message: msg, tree: t, parents: [parent] }, o)).data.sha;
+      await ghCall('PATCH', `${B}/git/refs/heads/${bp}`, { sha: cm, force: false }, o);
+      return;
+    } catch (e) {
+      last = e;
+      if (e.status === 409 || (e.status === 422 && /fast.?forward|conflict/i.test(e.message))) continue;
+      break;
+    }
+  }
+  throw last;
+}
+const commitMsg = chunk => {
+  const m = chunk.filter(o => o.type === 'move').length, d = chunk.length - m;
+  return [m && `move ${m} image(s)`, d && `delete ${d} image(s)`].filter(Boolean).join(', ') + ' via 神殿試煉圖床上傳器';
+};
+async function runOps(ops, c, title) {
+  const chunks = [];
+  for (let i = 0; i < ops.length; i += OP_CHUNK) chunks.push(ops.slice(i, i + OP_CHUNK));
+  let done = 0;
+  $('#progress').hidden = false;
+  try {
+    for (let i = 0; i < chunks.length; i++) {
+      setStage(`${title}｜提交 commit（第 ${i + 1}/${chunks.length} 批，${chunks[i].length} 張）`);
+      await commitOps(chunks[i], c, commitMsg(chunks[i]));
+      applyLocal(chunks[i], c);
+      done += chunks[i].length;
+      $('#overallBar').style.width = (done / ops.length * 100).toFixed(1) + '%';
+    }
+  } catch (e) {
+    throw new Error(`${e.message}（已完成 ${done}/${ops.length} 張，已完成的變更會保留）`);
+  }
+  setStage(`${title}｜完成`);
+  return done;
+}
+// commit 成功後，同步更新本機快取、對照表、歷史與佇列
+function applyLocal(chunk, c) {
+  for (const o of chunk) {
+    repo.entries.delete(o.from);
+    if (o.type === 'move') {
+      repo.entries.set(o.to, { sha: o.sha, size: o.size, mode: o.mode });
+      mapApply('move', o.from, o.to);
+      stateRename(o.from, o.to, c);
+    } else {
+      mapApply('delete', o.from);
+      stateRemove(o.from);
+    }
+  }
+  reindex();
+}
+async function withOp(fn) {
+  if (busy) return;
+  const c = readCfg();
+  if (!getToken()) return say('#brMsg', '請先完成 ① 登入', 'err');
+  if (!c.owner || !c.repo) return say('#brMsg', '請先填寫 ② 的 owner 與 repo', 'err');
+  if (!br.sel.size) return say('#brMsg', '請先勾選要操作的圖片', 'warn');
+  setBusy(true);
+  let result = null, err = null;
+  try { result = await fn(c); }
+  catch (e) { err = e; }
+  setBusy(false);
+  if (err || (result && result.done)) br.sel.clear();
+  renderList(); updateOut(); renderStrip(); renderHist();
+  await renderBrowser();
+  if (err) say('#brMsg', '操作中止：' + err.message, 'err');
+  else if (result) say('#brMsg', result.msg, result.done ? 'ok' : 'warn');
+}
+const previewLines = ops => ops.slice(0, 8).map(o => o.type === 'move' ? `• ${o.from}\n    → ${o.to}` : `• ${o.from}`).join('\n')
+  + (ops.length > 8 ? `\n…其餘 ${ops.length - 8} 張` : '');
+async function doMove(c) {
+  await loadTree(c, true);
+  if (repo.truncated) throw new Error('倉庫檔案數超過 GitHub 上限，暫不支援移動與刪除');
+  const destRaw = $('#mvDest').value;
+  const dest = cleanDir(destRaw.trim());
+  const { ops, skipped } = planMove([...br.sel], dest);
+  const label = dest || '根目錄';
+  if (!ops.length) return { msg: `沒有可移動的圖片${skipped.length ? `（${skipped.join('、')}）` : ''}`, done: false };
+  const renamed = ops.filter(o => o.renamed).length;
+  const ok = confirm(`📦 移動 ${ops.length} 張圖片到「${label}」？\n` +
+    (renamed ? `• ${renamed} 張與目的地同名，會自動加上後綴\n` : '') +
+    (skipped.length ? `• 略過 ${skipped.length} 張（已在該資料夾或已不存在）\n` : '') +
+    `• 圖片網址會改變，操作後請下載路徑對照表\n\n${previewLines(ops)}`);
+  if (!ok) return { msg: '已取消，未做任何變更', done: false };
+  const n = await runOps(ops, c, `移動 ${ops.length} 張`);
+  return { msg: `✅ 已移動 ${n} 張到「${label}」，請下載路徑對照表更新遊戲路徑`, done: true };
+}
+async function doDelete(c) {
+  await loadTree(c, true);
+  if (repo.truncated) throw new Error('倉庫檔案數超過 GitHub 上限，暫不支援移動與刪除');
+  const { ops, skipped } = planDelete([...br.sel]);
+  if (!ops.length) return { msg: '選取的圖片已不存在於倉庫', done: false };
+  if (!confirm(`🗑 【第 1 次確認】\n即將「永久刪除」${ops.length} 張圖片：\n\n${previewLines(ops)}` +
+    (skipped.length ? `\n\n（略過 ${skipped.length} 張已不存在的圖片）` : '') +
+    `\n\n刪除後這些網址將失效，遊戲中若仍引用會顯示破圖。`))
+    return { msg: '已取消，未做任何變更', done: false };
+  if (!confirm(`⚠️ 【第 2 次確認】\n真的要永久刪除這 ${ops.length} 張圖片嗎？\n\n本工具無法復原（Git 歷史仍保有舊版，但倉庫最新版本會移除）。`))
+    return { msg: '已取消，未做任何變更', done: false };
+  const n = await runOps(ops, c, `刪除 ${ops.length} 張`);
+  return { msg: `✅ 已永久刪除 ${n} 張，請下載路徑對照表更新遊戲`, done: true };
+}
+
+/* ================= 路徑對照表（localStorage；供遊戲端更新路徑） ================= */
+const mapGet = () => { try { return JSON.parse(localStorage.getItem(LS.map) || '[]'); } catch (e) { return []; } };
+const mapSave = m => { try { localStorage.setItem(LS.map, JSON.stringify(m.slice(0, 5000))); } catch (e) {} };
+// 同一張圖多次移動時，合併為「原始路徑 → 最新路徑」一筆
+function mapApply(type, from, to) {
+  const m = mapGet(), t = nowTxt();
+  const rec = m.find(r => r.status === 'moved' && r.current === from);
+  if (type === 'move') {
+    if (rec) { rec.current = to; rec.time = t; }
+    else m.unshift({ original: from, current: to, status: 'moved', time: t });
+  } else {
+    if (rec) { rec.current = null; rec.status = 'deleted'; rec.time = t; }
+    else m.unshift({ original: from, current: null, status: 'deleted', time: t });
+  }
+  mapSave(m);
+}
+// 同一路徑之後又重新上傳了新圖，就移除舊的刪除紀錄，避免對照表誤導
+function mapForget(path) {
+  mapSave(mapGet().filter(r => !(r.status === 'deleted' && r.original === path)));
+}
+const mapRows = c => mapGet()
+  .filter(r => !(r.status === 'moved' && r.original === r.current))
+  .map(r => ({
+    original_path: r.original,
+    new_path: r.current || '',
+    status: r.status === 'deleted' ? 'deleted' : 'moved',
+    old_url: makeLink(r.original, c),
+    new_url: r.current ? makeLink(r.current, c) : '',
+    updated_at: r.time
+  }));
+function updateMapCount() {
+  const n = mapRows(readCfg()).length;
+  $('#mapCount').textContent = `對照紀錄：${n} 筆（已移動或刪除）`;
+}
+function downloadMap(fmt) {
+  const c = readCfg(), rows = mapRows(c);
+  if (!rows.length) return say('#brMsg', '目前沒有移動或刪除的紀錄', 'warn');
+  if (fmt === 'json') {
+    const doc = { generated_at: nowTxt(), owner: c.owner, repo: c.repo, branch: c.branch, link_mode: c.linkMode,
+      note: 'status=moved：網址已改為 new_url；status=deleted：該圖已刪除，請在遊戲中移除或替換。網址依目前連結格式計算。',
+      records: rows };
+    download(`path_map_${stamp()}.json`, JSON.stringify(doc, null, 2), 'application/json');
+  } else {
+    const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const lines = [['original_path', 'new_path', 'status', 'old_url', 'new_url', 'updated_at'].join(',')]
+      .concat(rows.map(r => [r.original_path, r.new_path, r.status, r.old_url, r.new_url, r.updated_at].map(q).join(',')));
+    download(`path_map_${stamp()}.csv`, '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
+  }
+  say('#brMsg', `已下載對照表（${rows.length} 筆）`, 'ok');
+}
+
+/* ================= 燈箱 ================= */
+const lb = { items: [], i: 0, tmp: null, opener: null };
+function openLb(items, idx) {
+  if (!items.length) return;
+  lb.items = items; lb.i = Math.max(0, idx); lb.opener = document.activeElement;
+  $('#lb').hidden = false; showLb(); $('#lbClose').focus();
+}
+function showLb() {
+  if (lb.tmp) { URL.revokeObjectURL(lb.tmp); lb.tmp = null; }
+  const it = lb.items[lb.i];
+  let src = it.view || it.url || '';
+  if (!src && it.file) { lb.tmp = URL.createObjectURL(it.file); src = lb.tmp; }
+  if (!src) src = it.thumbUrl || '';
+  const img = $('#lbImg'); img.src = src; img.alt = it.name;
+  $('#lbName').textContent = `${it.name}（${lb.i + 1} / ${lb.items.length}）`;
+  $('#lbUrl').textContent = it.url || '（尚未上傳，顯示的是本機預覽）';
+  $('#lbCopy').disabled = $('#lbMd').disabled = $('#lbOpen').disabled = !it.url;
+  $('#lbPrev').disabled = $('#lbNext').disabled = lb.items.length < 2;
+}
+function closeLb() {
+  $('#lb').hidden = true;
+  if (lb.tmp) { URL.revokeObjectURL(lb.tmp); lb.tmp = null; }
+  $('#lbImg').removeAttribute('src');
+  if (lb.opener && lb.opener.focus) lb.opener.focus();
+}
+function lbStep(d) { const n = lb.items.length; if (n < 2) return; lb.i = (lb.i + d + n) % n; showLb(); }
+function openLbQueue(id) {
+  const list = files.filter(f => f.status !== 'prep' && (f.url || f.file || f.thumbUrl));
+  const idx = list.findIndex(f => f.id === id);
+  openLb(list.map(f => ({ name: f.name, url: f.url, view: f.raw || '', file: f.url ? null : f.file, thumbUrl: f.thumbUrl })), Math.max(0, idx));
+}
+
+/* ================= IndexedDB（保存上傳佇列） ================= */
+let dbPromise = null;
+function openDB() {
+  if (!dbPromise) dbPromise = new Promise((res, rej) => {
+    if (!self.indexedDB) return rej(new Error('此瀏覽器不支援 IndexedDB'));
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore(STORE, { keyPath: 'id' });
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+  return dbPromise;
+}
+async function dbTx(mode, fn) {
+  const db = await openDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, mode);
+    const req = fn(tx.objectStore(STORE));
+    tx.oncomplete = () => res(req ? req.result : undefined);
+    tx.onerror = () => rej(tx.error);
+    tx.onabort = () => rej(tx.error);
+  });
+}
+const toRec = it => { const { thumbUrl, ...rest } = it; return rest; };
+async function dbSave(it) { try { await dbTx('readwrite', st => st.put(toRec(it))); } catch (e) { console.warn('IndexedDB 寫入失敗', e); } }
+async function dbDel(id) { try { await dbTx('readwrite', st => st.delete(id)); } catch (e) {} }
+async function restoreQueue() {
+  try {
+    const recs = (await dbTx('readonly', st => st.getAll())).sort((a, b) => a.id - b.id);
+    seq = recs.reduce((m, r) => Math.max(m, r.id), 0);
+    for (const r of recs.filter(r => r.status === 'prep')) dbDel(r.id);
+    files = recs.filter(r => r.status !== 'prep').map(r => {
+      const it = { ...r, pct: 0, attempt: 0, maxAttempts: 0, thumbUrl: '' };
+      if (it.status === 'uploading') it.status = 'wait';
+      if (it.thumb) it.thumbUrl = URL.createObjectURL(it.thumb);
+      return it;
+    });
+    if (files.length) say('#uploadMsg', `已還原上次保存的 ${files.length} 筆（待上傳 ${files.filter(f => f.status === 'wait').length} 筆）`, 'ok');
+  } catch (e) { say('#uploadMsg', '無法讀取保存的佇列（將以新清單開始）：' + e.message, 'warn'); }
+}
+
+/* ================= 歷史 ================= */
+const histGet = () => { try { return JSON.parse(localStorage.getItem(LS.hist) || '[]'); } catch (e) { return []; } };
+const histSave = h => { try { localStorage.setItem(LS.hist, JSON.stringify(h.slice(0, 100))); } catch (e) {} };
+function histAdd(it) {
+  const h = histGet();
+  h.unshift({ name: it.name, path: it.path, url: it.url, raw: it.raw || it.url, size: it.size, fp: it.fp, time: nowTxt() });
+  histSave(h);
+}
+const historyFps = () => new Set(histGet().map(x => x.fp).filter(Boolean));
+function renderHist() {
+  const h = histGet(), box = $('#hist');
+  if (!h.length) return box.replaceChildren(el('p', { class: 'empty', text: '尚無紀錄' }));
+  const lbItems = h.map(x => ({ name: x.name, url: x.url, view: x.raw || x.url }));
+  box.replaceChildren(...h.map((x, i) => el('div', { class: 'item', style: 'grid-template-columns:64px 1fr auto' },
+    el('button', { class: 'thumb', 'aria-label': '放大 ' + x.name, onclick: () => openLb(lbItems, i) },
+      el('img', { src: x.raw || x.url, alt: x.name, loading: 'lazy' })),
+    el('div', {}, el('b', { text: x.name }), el('span', { class: 'hint', text: '  ' + x.time }), el('div', { class: 'url', text: x.url })),
+    el('div', { class: 'actions' }, el('button', { class: 'ghost', onclick: () => copy(x.url), text: '複製' })))));
+}
+// 移動後同步更新歷史與佇列中的網址；刪除後移除
+function stateRename(from, to, c) {
+  histSave(histGet().map(x => x.path === from ? { ...x, path: to, url: makeLink(to, c), raw: rawUrl(to, c) } : x));
+  files.forEach(f => { if (f.status === 'done' && f.path === from) { f.path = to; f.url = makeLink(to, c); f.raw = rawUrl(to, c); dbSave(f); } });
+}
+function stateRemove(from) {
+  histSave(histGet().filter(x => x.path !== from));
+  files = files.filter(f => {
+    if (f.status === 'done' && f.path === from) { if (f.thumbUrl) URL.revokeObjectURL(f.thumbUrl); dbDel(f.id); return false; }
+    return true;
+  });
+}
+
+/* ================= ④ 佇列與檔案分析 ================= */
+let files = [];
+let seq = 0;
+let busy = false;
+let stopFlag = false;
+let prepChain = Promise.resolve();
+let prog = null;
+let outFmt = 'plain';
+let renderTimer = 0;
+
+function scheduleRender() {
+  if (renderTimer) return;
+  renderTimer = requestAnimationFrame(() => { renderTimer = 0; renderList(); updateOut(); renderStrip(); });
+}
+function renderList() {
+  const box = $('#list');
+  if (!files.length) box.replaceChildren(el('p', { class: 'empty', text: '尚無待上傳項目。把圖片拖進上方區域，或按 Ctrl+V 貼上截圖。' }));
+  else box.replaceChildren(...files.map(itemRow));
+  updateCount();
+}
+function itemRow(it) {
+  const labels = { prep: '🔍 分析中…', wait: '⏳ 等待上傳', uploading: '⬆️ 上傳中…',
+    done: it.dupRemote ? '♻️ 倉庫已有相同圖片，沿用既有連結' : '✅ 上傳成功', error: '❌ 失敗' };
+  let st = labels[it.status] || '';
+  if (it.status === 'uploading' && it.attempt > 1) st += `（第 ${it.attempt}/${it.maxAttempts} 次）`;
+  const badges = [];
+  if (it.dims) badges.push(el('span', { class: 'badge', text: it.dims }));
+  badges.push(el('span', { class: 'badge', text: fmtSize(it.size) }));
+  if (it.pot === true) badges.push(el('span', { class: 'badge ok', text: '2 的次方 ✓' }));
+  if (it.pot === false) badges.push(el('span', { class: 'badge warn', title: '遊戲貼圖建議 2 的次方尺寸（僅提醒，不影響上傳）', text: '⚠️ 非 2 的次方' }));
+  if (it.alpha) badges.push(el('span', { class: 'badge', text: '含透明' }));
+  if ($('#linkMode').value === 'cdn' && it.size > JSD_MAX) badges.push(el('span', { class: 'badge warn', text: '⚠️ 超過 jsDelivr 約 20MB，建議改用 raw' }));
+  const thumb = el('button', { class: 'thumb', 'aria-label': '放大檢視 ' + it.name, onclick: () => openLbQueue(it.id) },
+    it.thumbUrl ? el('img', { src: it.thumbUrl, alt: '' }) : el('span', { class: 'ph', text: '無預覽' }));
+  const info = el('div', {},
+    el('div', {}, el('b', { text: it.name }), ' ', ...badges, el('span', { class: 'hint', text: ' · ' + st })),
+    it.error ? el('div', { class: it.status === 'uploading' ? 'warn' : 'err', text: it.error }) : null,
+    it.url ? el('div', { class: 'url', text: it.url }) : null,
+    it.status === 'uploading' ? el('div', { class: 'bar' }, el('div', { style: `width:${it.pct}%` })) : null);
+  const act = el('div', { class: 'actions' });
+  if (it.url) act.append(el('button', { onclick: () => copy(it.url), text: '複製連結' }),
+    el('button', { class: 'ghost', onclick: () => window.open(it.raw || it.url, '_blank', 'noopener'), text: '開啟' }));
+  if (!busy && it.status !== 'prep' && it.status !== 'uploading')
+    act.append(el('button', { class: 'ghost', onclick: () => removeItem(it.id), text: '移除' }));
+  return el('div', { class: 'item' }, thumb, info, act);
+}
+function updateCount() {
+  const w = files.filter(f => f.status === 'wait').length, d = files.filter(f => f.status === 'done').length, e = files.filter(f => f.status === 'error').length;
+  $('#count').textContent = `共 ${files.length} 筆｜等待 ${w}｜完成 ${d}${e ? `｜失敗 ${e}` : ''}`;
+}
+function buildOut(fmt) {
+  const d = files.filter(f => f.status === 'done' && f.url);
+  if (fmt === 'md') return d.map(f => `![${f.path.split('/').pop()}](${f.url})`).join('\n');
+  if (fmt === 'json') return JSON.stringify(d.map(f => ({ name: f.path.split('/').pop(), url: f.url })), null, 2);
+  return d.map(f => f.url).join('\n');
+}
+function updateOut() { $('#out').value = buildOut(outFmt); updateCount(); }
+function renderStrip() {
+  const done = files.filter(f => f.status === 'done' && f.url);
+  const items = done.map(f => ({ name: f.name, url: f.url, view: f.raw || f.url }));
+  $('#strip').replaceChildren(...done.map((f, i) => el('button', { class: 'thumb', 'aria-label': '放大 ' + f.name, onclick: () => openLb(items, i) },
+    el('img', { src: f.raw || f.url, alt: f.name, loading: 'lazy' }))));
+}
+async function removeItem(id) {
+  if (busy) return;
+  const i = files.findIndex(f => f.id === id); if (i < 0) return;
+  const [it] = files.splice(i, 1);
+  if (it.thumbUrl) URL.revokeObjectURL(it.thumbUrl);
+  await dbDel(id);
+  renderList(); updateOut(); renderStrip();
+}
+async function clearDone() {
+  if (busy) return;
+  for (const f of files.filter(f => f.status === 'done')) { if (f.thumbUrl) URL.revokeObjectURL(f.thumbUrl); await dbDel(f.id); }
+  files = files.filter(f => f.status !== 'done');
+  renderList(); updateOut(); renderStrip();
+}
+async function clearAll() {
+  if (busy) return;
+  if (!confirm('確定清空全部待處理清單？（不會刪除 GitHub 上已上傳的檔案）')) return;
+  files.forEach(f => { if (f.thumbUrl) URL.revokeObjectURL(f.thumbUrl); });
+  files = [];
+  try { await dbTx('readwrite', st => st.clear()); } catch (e) {}
+  renderList(); updateOut(); renderStrip();
+}
+
+/* 檔案分析：縮圖（160px）、尺寸、透明、2 的次方、Git blob SHA-1 指紋 */
+const loadImg = src => new Promise((res, rej) => {
+  const im = new Image();
+  im.onload = () => res(im);
+  im.onerror = () => rej(new Error('無法解碼此圖片（格式不支援或檔案損毀）'));
+  im.src = src;
+});
+async function inspect(f) {
+  const isSvg = f.type === 'image/svg+xml' || /\.svg$/i.test(f.name);
+  let w = 0, h = 0;
+  if (isSvg && f.size <= 5 * 1024 * 1024) {
+    const svg = new DOMParser().parseFromString(await f.text(), 'image/svg+xml').documentElement;
+    const num = v => (v && !/%/.test(v)) ? parseFloat(v) : 0;
+    w = num(svg.getAttribute('width')); h = num(svg.getAttribute('height'));
+    const vb = (svg.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+    if ((!(w > 0) || !(h > 0)) && vb.length === 4 && vb[2] > 0 && vb[3] > 0) { w = vb[2]; h = vb[3]; }
+  }
+  const out = { dims: '未知', pot: null, alpha: null, thumb: null };
+  const url = URL.createObjectURL(f);
+  try {
+    const img = await loadImg(url);
+    if (!isSvg) { w = img.naturalWidth; h = img.naturalHeight; }
+    // SVG 若無任何尺寸資訊，以 512 作為縮圖的基準（避免 0×0 或 1×1）
+    const rw = w > 0 ? w : (img.naturalWidth || 512), rh = h > 0 ? h : (img.naturalHeight || 512);
+    const s = Math.min(1, THUMB_PX / Math.max(rw, rh));
+    const cv = document.createElement('canvas');
+    cv.width = Math.max(1, Math.round(rw * s)); cv.height = Math.max(1, Math.round(rh * s));
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, cv.width, cv.height);
+    const px = ctx.getImageData(0, 0, cv.width, cv.height).data;
+    let hasA = false;
+    for (let i = 3; i < px.length; i += 4) { if (px[i] < 250) { hasA = true; break; } }
+    out.thumb = await new Promise(r => cv.toBlob(r, 'image/webp', 0.85))
+             || await new Promise(r => cv.toBlob(r, 'image/png'));
+    out.alpha = isSvg ? null : hasA;
+    out.dims = (w > 0 && h > 0) ? `${Math.round(w)}×${Math.round(h)}` : 'SVG（無固定尺寸）';
+    out.pot = (!isSvg && w > 0 && h > 0) ? (isP2(w) && isP2(h)) : null;
+  } catch (e) {
+    out.dims = (isSvg && !(w > 0)) ? 'SVG（無固定尺寸）' : '未知（無法預覽）';
+  } finally { URL.revokeObjectURL(url); }
+  return out;
+}
+async function gitBlobSha(f) {
+  if (!(window.crypto && crypto.subtle)) return '';
+  const buf = new Uint8Array(await f.arrayBuffer());
+  const head = new TextEncoder().encode(`blob ${buf.length}\0`);
+  const all = new Uint8Array(head.length + buf.length);
+  all.set(head, 0); all.set(buf, head.length);
+  const d = new Uint8Array(await crypto.subtle.digest('SHA-1', all));
+  return [...d].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(String(fr.result).split(',')[1]);
+    fr.onerror = () => rej(new Error('讀取檔案失敗'));
     fr.readAsDataURL(file);
   });
 }
-// 把 GitHub 的錯誤碼翻成中文說明
-function errText(status, data){
-  const m = (data && data.message) || '';
-  if(status===422 && /sha/i.test(m)) return '同名檔案已存在（請開啟「自動加時間戳記」或更換檔名）';
-  if(status===409) return 'GitHub 同時寫入衝突';
-  if((status===403 || status===429) && /rate limit|abuse|secondary/i.test(m)) return 'GitHub 速率限制';
-  if(status===401) return 'Token 無效或已過期';
-  return m || ('HTTP '+status);
-}
-// 從回應標頭計算需要等待多久（毫秒）
-function parseWait(r){
-  const ra = Number(r.headers.get('retry-after'));
-  if(ra>0) return ra*1000;
-  const reset = Number(r.headers.get('x-ratelimit-reset'));
-  if(r.headers.get('x-ratelimit-remaining')==='0' && reset>0) return Math.max(0, reset*1000 - Date.now()) + 1000;
-  return 0;
-}
-// 網路中斷後，確認檔案是否其實已經上傳成功
-async function fileExists(path, cfg){
-  try{
-    const r = await fetch(`${API}/repos/${enc(cfg.owner)}/${enc(cfg.repo)}/contents/${encPath(path)}?ref=${enc(cfg.branch)}`, {headers:gh()});
-    return r.ok;
-  }catch(e){ return false; }
-}
-function markDone(it, cfg){
-  it.url = makeLink(it.path, cfg);
-  it.status = 'done'; it.error = '';
-  addHist(it);
-  renderList();
-}
-async function uploadOne(it, cfg){
-  if(it.file.size > MAX_BYTES){
-    it.status='error'; it.error='超過 25MB，請先壓縮'; renderList(); return;
+async function prepAll(items, c, allowDup) {
+  for (const it of items) {
+    if (!files.includes(it)) continue;              // 分析期間被移除
+    try {
+      Object.assign(it, await inspect(it.file));
+      it.sha = await gitBlobSha(it.file).catch(() => '');
+      if (!allowDup && it.sha && repo.key === repoKey(c) && repo.shaIndex.has(it.sha)) {
+        it.path = repo.shaIndex.get(it.sha); it.url = makeLink(it.path, c); it.raw = rawUrl(it.path, c);
+        it.status = 'done'; it.dupRemote = true; it.file = null;
+      } else it.status = 'wait';
+    } catch (e) { it.status = 'error'; it.error = '檔案分析失敗：' + e.message; }
+    if (it.thumb) it.thumbUrl = URL.createObjectURL(it.thumb);
+    await dbSave(it);
+    scheduleRender();
   }
-  it.path = buildPath(it.name, cfg);
-  it.status = 'uploading'; it.error = ''; it.attempt = 1; it.maxAttempts = cfg.retryMax + 1;
+}
+async function addFiles(list) {
+  if (busy) return say('#uploadMsg', '上傳或操作中無法加入新檔案，請稍後再試', 'warn');
+  const c = readCfg();
+  const allowDup = $('#allowDup').checked;
+  const hfp = historyFps();
+  const fresh = [], skipped = [], dups = [];
+  for (const f of list) {
+    if (!(f.type.startsWith('image/') || EXT_OK.test(f.name))) { skipped.push(f.name); continue; }
+    const fp = `${f.name}|${f.size}|${f.lastModified}`;
+    if (!allowDup && (files.some(x => x.fp === fp) || hfp.has(fp))) { dups.push(f.name); continue; }
+    const it = { id: ++seq, name: f.name || 'paste.png', size: f.size, lastModified: f.lastModified, fp, file: f,
+      thumb: null, thumbUrl: '', dims: '', pot: null, alpha: null, sha: '', status: 'prep', path: '', url: '', raw: '',
+      error: '', fatal: false, dupRemote: false, pct: 0, attempt: 0, maxAttempts: 0 };
+    if (f.size > MAX_BYTES) { it.status = 'error'; it.fatal = true; it.error = '超過 25MB，請先壓縮後再加入'; it.file = null; }
+    files.push(it); fresh.push(it);
+  }
+  for (const it of fresh) if (it.status === 'error') await dbSave(it);
+  renderList(); updateOut();
+  const work = fresh.filter(it => it.status === 'prep');
+  if (work.length) {
+    // 先同步倉庫清單，才能在加入時就比對出「倉庫已有相同圖片」
+    if (!allowDup && getToken() && c.owner && c.repo) {
+      say('#uploadMsg', '同步倉庫清單以比對重複…');
+      try { await loadTree(c); } catch (e) { /* 無法取得時仍會於上傳前再比對一次 */ }
+    }
+    say('#uploadMsg', `分析 ${work.length} 張圖片（尺寸、透明、指紋）…`);
+    prepChain = prepChain.catch(() => {}).then(() => prepAll(work, c, allowDup));
+    await prepChain;
+  }
+  const msgs = [`已加入 ${fresh.length} 張`];
+  if (dups.length) msgs.push(`略過重複 ${dups.length} 張（${dups.slice(0, 3).join('、')}${dups.length > 3 ? '…' : ''}）`);
+  if (skipped.length) msgs.push(`略過非圖片：${skipped.join('、')}`);
+  say('#uploadMsg', msgs.join('；'), skipped.length ? 'err' : 'ok');
+}
+
+/* ================= 上傳核心：Git Data API（blob → tree → commit → ref） ================= */
+function setBusy(v) {
+  busy = v;
+  ['btnLogin', 'btnLogout', 'btnCheck', 'btnUpload', 'btnRetry', 'btnClearDone', 'btnClearAll', 'btnMove', 'btnDelete', 'btnMapClear'].forEach(id => $('#' + id).disabled = v);
+  $('#btnStop').hidden = !v; $('#btnStop').disabled = false;
   renderList();
-
-  let content;
-  try{ content = await toBase64(it.file); }
-  catch(e){ it.status='error'; it.error=e.message; renderList(); return; }
-
-  const api = `${API}/repos/${enc(cfg.owner)}/${enc(cfg.repo)}/contents/${encPath(it.path)}`;
-  let afterNetworkError = false;
-
-  for(let attempt=1; attempt<=it.maxAttempts; attempt++){
-    it.attempt = attempt;
-    let msg='', retryable=false, waitMs=0;
-    try{
-      const r = await fetch(api, {
-        method:'PUT',
-        headers:gh({'Content-Type':'application/json'}),
-        body:JSON.stringify({ message:`upload ${it.path}`, content, branch:cfg.branch })
+}
+const setStage = t => { $('#stage').textContent = t; };
+function updateProgress() {
+  if (!prog) return;
+  const done = Math.min(prog.total, prog.done + (prog.live || 0));
+  const pct = prog.total ? done / prog.total * 100 : 100;
+  $('#overallBar').style.width = pct.toFixed(1) + '%';
+  const sec = (Date.now() - prog.t0) / 1000, speed = sec > 0 ? done / sec : 0;
+  $('#stats').textContent = `${pct.toFixed(1)}%｜${fmtSize(done)} / ${fmtSize(prog.total)}｜速度 ${fmtSize(speed)}/s｜預估剩餘 ${fmtTime(speed > 0 ? (prog.total - done) / speed : 0)}`;
+}
+async function uploadBlobs(chunk, c, label) {
+  for (let i = 0; i < chunk.length; i++) {
+    if (stopFlag) return;
+    const it = chunk[i], est = estB64(it.size);
+    if (it.blobSha) { prog.done += est; continue; }     // 先前已建立的 blob 直接沿用（重試時不重傳）
+    it.status = 'uploading'; it.attempt = 1; it.maxAttempts = c.retryMax + 1; it.pct = 0; it.error = '';
+    prog.count++;
+    setStage(`${label}｜建立 Git blob ${prog.count}/${prog.todo}：${it.name}`);
+    scheduleRender();
+    try {
+      if (!it.file) throw new Error('原檔已遺失，請移除後重新加入');
+      const content = await toBase64(it.file);
+      const r = await ghCall('POST', `${base(c)}/git/blobs`, { content, encoding: 'base64' }, {
+        retries: c.retryMax,
+        onUp: (loaded) => { prog.live = Math.min(loaded, est); it.pct = Math.min(100, Math.round(prog.live / Math.max(est, 1) * 100)); updateProgress(); scheduleRender(); },
+        onRetry: ({ attempt, max, msg, sec }) => { it.attempt = attempt + 1; it.maxAttempts = max; it.error = `${msg}，${sec} 秒後重試`; scheduleRender(); }
       });
-      const data = await r.json().catch(()=>({}));
-      if(r.ok){ markDone(it, cfg); return; }
-
-      // 網路中斷前其實已上傳成功 → 檔案已存在，直接視為成功
-      if(r.status===422 && afterNetworkError && await fileExists(it.path, cfg)){
-        markDone(it, cfg); return;
+      it.blobSha = r.data.sha;
+      it.error = '';
+    } catch (e) {
+      it.status = 'error'; it.error = `建立失敗：${e.message}`;
+    }
+    prog.done += est; prog.live = 0;
+    await dbSave(it);
+    updateProgress(); scheduleRender();
+    if (i < chunk.length - 1 && !stopFlag) await sleep(GAP_MS);
+  }
+}
+async function commitChunk(ready, c, label) {
+  const B = base(c), bp = encPath(c.branch);
+  ready.forEach(it => { it.status = 'uploading'; it.pct = 100; });
+  scheduleRender();
+  let lastErr = null;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    setStage(`${label}｜提交 commit（${ready.length} 張）${attempt > 1 ? `，第 ${attempt} 次嘗試` : ''}`);
+    try {
+      const o = { retries: c.retryMax };
+      const parent = (await ghCall('GET', `${B}/git/ref/heads/${bp}`, undefined, o)).data.object.sha;
+      const baseTree = (await ghCall('GET', `${B}/git/commits/${parent}`, undefined, o)).data.tree.sha;
+      const tree = (await ghCall('POST', `${B}/git/trees`, {
+        base_tree: baseTree,
+        tree: ready.map(it => ({ path: it.path, mode: '100644', type: 'blob', sha: it.blobSha }))
+      }, o)).data.sha;
+      const commit = (await ghCall('POST', `${B}/git/commits`, {
+        message: `upload ${ready.length} image(s) via 神殿試煉圖床上傳器`, tree, parents: [parent]
+      }, o)).data.sha;
+      await ghCall('PATCH', `${B}/git/refs/heads/${bp}`, { sha: commit, force: false }, o);
+      for (const it of ready) {
+        it.status = 'done'; it.url = makeLink(it.path, c); it.raw = rawUrl(it.path, c);
+        it.error = ''; it.file = null; it.pct = 0;
+        repo.entries.set(it.path, { sha: it.blobSha, size: it.size, mode: '100644' });
+        if (!repo.shaIndex.has(it.blobSha)) repo.shaIndex.set(it.blobSha, it.path);
+        mapForget(it.path);
+        histAdd(it);
+        await dbSave(it);
       }
-
-      msg = errText(r.status, data);
-      const limited = (r.status===403 || r.status===429) &&
-                      (/rate limit|abuse|secondary/i.test(data.message||'') || r.headers.get('x-ratelimit-remaining')==='0');
-      retryable = RETRY_STATUS.includes(r.status) || limited || r.status>=500;
-      waitMs = parseWait(r);
-    }catch(e){
-      // fetch 本身失敗 = 網路問題
-      msg = '網路連線失敗';
-      retryable = true;
-      afterNetworkError = true;
+      setStage(`${label}｜commit 完成：${ready.length} 張已寫入倉庫`);
+      scheduleRender();
+      return;
+    } catch (e) {
+      lastErr = e;
+      // 409，或 422 且訊息為非快轉：代表分支已被他人更新，重新取得 HEAD 再來一次
+      if (e.status === 409 || (e.status === 422 && /fast.?forward|conflict/i.test(e.message))) continue;
+      break;
     }
-
-    if(!retryable || attempt>=it.maxAttempts){
-      it.status='error';
-      it.error = retryable ? `${msg}（已自動重試 ${cfg.retryMax} 次仍失敗）` : msg;
-      renderList(); return;
-    }
-
-    // 退避等待：2、4、8、16、32 秒；若 GitHub 要求等待更久，則依其要求
-    const backoff = Math.min(60000, 2000 * 2 ** (attempt-1));
-    const wait = Math.min(900000, Math.max(backoff, waitMs));
-    it.error = `第 ${attempt} 次失敗（${msg}），${Math.ceil(wait/1000)} 秒後自動重試（${attempt}/${cfg.retryMax}）`;
-    renderList();
-    await sleep(wait);
-    it.error = '';
   }
-}
-
-async function startUpload(){
-  if(!localStorage.getItem(LS.token)) return say('#uploadMsg','請先完成 ① 登入','err');
-  const cfg=readCfg();
-  if(!cfg.owner||!cfg.repo) return say('#uploadMsg','請先填寫 owner 與 repo','err');
-  const q=files.filter(f=>f.status==='wait');
-  if(!q.length) return say('#uploadMsg','沒有待上傳的檔案，請先加入圖片','err');
-
-  $('#btnUpload').disabled=true;
-  say('#uploadMsg',`上傳中，共 ${q.length} 張，同時 ${cfg.concurrency} 張，失敗自動重試 ${cfg.retryMax} 次…`);
-  let next=0;
-  const worker = async()=>{
-    while(next<q.length){
-      const it=q[next++];
-      await uploadOne(it,cfg);
-      renderList(); updateOut(); renderHist();
-      if(next<q.length) await sleep(GAP_MS);
-    }
-  };
-  try{
-    await Promise.all(Array.from({length:cfg.concurrency}, worker));
-  }finally{
-    $('#btnUpload').disabled=false;
+  const reason = lastErr && lastErr.status === 404 ? `找不到分支「${c.branch}」，請確認分支名稱；空倉庫請先建立一個 commit` : (lastErr ? lastErr.message : '未知錯誤');
+  for (const it of ready) {
+    it.status = 'error';
+    it.error = `提交失敗：${reason}（圖片已上傳為 Git blob，可按「重試失敗項目」重新提交）`;
+    await dbSave(it);
   }
-  const ok=q.filter(f=>f.status==='done').length;
-  say('#uploadMsg', `完成：成功 ${ok}／${q.length}${ok<q.length?'，仍失敗的項目可按「重試失敗項目」':''}`, ok===q.length?'ok':'err');
+  scheduleRender();
 }
-async function retryFailed(){
-  const n=files.filter(f=>f.status==='error').length;
-  if(!n) return say('#uploadMsg','目前沒有失敗的項目');
-  files.forEach(f=>{ if(f.status==='error'){ f.status='wait'; f.error=''; } });
+async function runBatch(queue, c, allowDup) {
+  const planned = new Set(), todo = [];
+  for (const it of queue) {
+    if (!allowDup && it.sha && repo.shaIndex.has(it.sha)) {       // 倉庫已有相同內容：沿用既有連結
+      it.path = repo.shaIndex.get(it.sha); it.url = makeLink(it.path, c); it.raw = rawUrl(it.path, c);
+      it.status = 'done'; it.dupRemote = true; it.error = ''; it.file = null; it.pct = 0;
+      await dbSave(it); continue;
+    }
+    it.path = buildPath(it.name, c);
+    if (repo.entries.has(it.path) || planned.has(it.path)) {
+      it.status = 'error'; it.error = '同名檔案已存在（請開啟「自動加時間戳記」或更換檔名）';
+      await dbSave(it); continue;
+    }
+    planned.add(it.path); todo.push(it);
+  }
+  scheduleRender();
+  const chunks = [];
+  for (let i = 0; i < todo.length; i += c.chunkSize) chunks.push(todo.slice(i, i + c.chunkSize));
+  const total = todo.reduce((s, it) => s + estB64(it.size), 0);
+  prog = { done: 0, live: 0, total, t0: Date.now(), count: 0, todo: todo.length };
+  $('#progress').hidden = false; updateProgress();
+  for (let ci = 0; ci < chunks.length && !stopFlag; ci++) {
+    const label = chunks.length > 1 ? `第 ${ci + 1}/${chunks.length} 批` : '批次';
+    await uploadBlobs(chunks[ci], c, label);
+    const ready = chunks[ci].filter(it => it.blobSha && it.status !== 'error');
+    if (ready.length) await commitChunk(ready, c, label);
+  }
+  setStage(stopFlag ? '已停止：已提交的部分會保留，未處理項目仍在清單中（可再次上傳）' : '全部處理完成');
+  updateProgress();
+}
+async function startUpload() {
+  if (busy) return;
+  if (!getToken()) return say('#uploadMsg', '請先完成 ① 登入', 'err');
+  const c = readCfg();
+  if (!c.owner || !c.repo) return say('#uploadMsg', '請先填寫 owner 與 repo', 'err');
+  await prepChain;
+  const queue = files.filter(f => f.status === 'wait');
+  if (!queue.length) return say('#uploadMsg', '沒有待上傳的檔案，請先加入圖片', 'err');
+  const allowDup = $('#allowDup').checked;
+  stopFlag = false;
+  setBusy(true);
+  say('#uploadMsg', '同步倉庫最新清單…');
+  try {
+    await loadTree(c, true);
+    await runBatch(queue, c, allowDup);
+  } catch (e) {
+    say('#uploadMsg', '中止：' + e.message, 'err');
+    return;
+  } finally {
+    setBusy(false); renderList(); updateOut(); renderStrip(); renderHist(); renderBrowser();
+  }
+  const ok = queue.filter(f => f.status === 'done').length;
+  const dup = queue.filter(f => f.dupRemote).length;
+  const err = queue.filter(f => f.status === 'error').length;
+  const left = queue.filter(f => f.status === 'wait').length;
+  say('#uploadMsg',
+    `完成：成功 ${ok - dup}、倉庫已有 ${dup}、失敗 ${err}${left ? `、未處理 ${left}` : ''}${err ? '（失敗項目可按「重試失敗項目」）' : ''}`,
+    (err || left) ? 'err' : 'ok');
+}
+async function retryFailed() {
+  if (busy) return;
+  const targets = files.filter(f => f.status === 'error' && !f.fatal);
+  if (!targets.length) {
+    const fat = files.some(f => f.fatal);
+    return say('#uploadMsg', fat ? '失敗項目皆為超過 25MB 的檔案，無法重試；請壓縮後移除再加入' : '目前沒有可重試的失敗項目', 'warn');
+  }
+  for (const f of targets) { f.status = 'wait'; f.error = ''; f.pct = 0; await dbSave(f); }
   renderList();
   await startUpload();
 }
-function clearDone(){
-  files.filter(f=>f.status==='done').forEach(f=>URL.revokeObjectURL(f.thumb));
-  files=files.filter(f=>f.status!=='done');
-  renderList(); updateOut();
-}
-function clearAll(){
-  if(!confirm('確定清空全部待處理清單？（不會刪除 GitHub 上已上傳的檔案）')) return;
-  files.forEach(f=>URL.revokeObjectURL(f.thumb)); files=[];
-  renderList(); updateOut();
-}
 
-/* ---------- 歷史 ---------- */
-function addHist(it){
-  const h=JSON.parse(localStorage.getItem(LS.hist)||'[]');
-  h.unshift({ name:it.name, path:it.path, url:it.url, time:new Date().toLocaleString('zh-TW',{hour12:false}) });
-  localStorage.setItem(LS.hist, JSON.stringify(h.slice(0,100)));
-}
-function renderHist(){
-  const h=JSON.parse(localStorage.getItem(LS.hist)||'[]');
-  const box=$('#hist'); box.innerHTML='';
-  if(!h.length){ box.innerHTML='<p class="hint">尚無紀錄</p>'; return; }
-  h.forEach(x=>{
-    const div=document.createElement('div'); div.className='item'; div.style.gridTemplateColumns='1fr auto';
-    div.innerHTML=`<div><b>${esc(x.name)}</b> <span class="hint">${esc(x.time)}</span><div class="url">${esc(x.url)}</div></div>`;
-    const a=document.createElement('div'); a.className='actions';
-    a.append(btn('複製', ()=>copy(x.url)));
-    div.append(a); box.append(div);
-  });
-}
+/* ================= 初始化與事件 ================= */
+$('#btnLogin').onclick = login;
+$('#token').onkeydown = e => { if (e.key === 'Enter') login(); };
+$('#btnLogout').onclick = logout;
+$('#btnCheck').onclick = checkRepo;
+$('#remember').onchange = () => {
+  localStorage.setItem(LS.remember, $('#remember').checked ? '1' : '0');
+  const t = getToken(); if (t) storeToken(t, $('#remember').checked);
+};
+$('#btnUp').onclick = () => go(parentOf(br.path));
+$('#btnRoot').onclick = () => go('');
+$('#btnGoDest').onclick = () => go(destDir(readCfg()));
+$('#btnRefresh').onclick = () => { repo.ts = 0; renderBrowser(); };
+$('#brRecursive').onchange = () => { br.sel.clear(); renderBrowser(); };
+$('#brAll').onchange = e => {
+  br.files.forEach(f => e.target.checked ? br.sel.add(f.path) : br.sel.delete(f.path));
+  if (br.model) paint(readCfg(), br.model);          // 只重繪，不重新呼叫 API
+};
+$('#btnCopySelMd').onclick = () => copySel('md');
+$('#btnCopySelUrl').onclick = () => copySel('url');
+$('#btnUseDest').onclick = () => {
+  const parts = br.path.split('/');
+  const cats = [...$('#category').options].map(o => o.value);
+  if (!br.path || !cats.includes(parts[0])) return say('#brMsg', '此路徑不在預設分類（傭兵／角色／動態精靈／寵物／其他）之下，無法設為上傳目的地', 'warn');
+  $('#category').value = parts[0]; $('#sub').value = parts.slice(1).join('/'); saveCfg();
+  say('#brMsg', `已設定上傳目的地：${br.path}`, 'ok');
+};
+$('#btnMove').onclick = () => withOp(doMove);
+$('#btnDelete').onclick = () => withOp(doDelete);
+$('#btnMapJson').onclick = () => downloadMap('json');
+$('#btnMapCsv').onclick = () => downloadMap('csv');
+$('#btnMapClear').onclick = () => {
+  if (!mapGet().length) return say('#brMsg', '對照紀錄已是空的', 'warn');
+  if (!confirm('清空對照紀錄？已移動或刪除的舊網址對照會遺失，建議先下載備份。')) return;
+  localStorage.removeItem(LS.map); updateMapCount(); say('#brMsg', '已清空對照紀錄', 'ok');
+};
+$('#btnUpload').onclick = startUpload;
+$('#btnStop').onclick = () => { stopFlag = true; $('#btnStop').disabled = true; setStage('正在停止：會先提交已完成的部分…'); };
+$('#btnRetry').onclick = retryFailed;
+$('#btnClearDone').onclick = clearDone;
+$('#btnClearAll').onclick = clearAll;
+$('#btnCopyOut').onclick = () => copy($('#out').value);
+document.querySelectorAll('[data-fmt]').forEach(b => b.onclick = () => { outFmt = b.dataset.fmt; updateOut(); });
+$('#btnHistClear').onclick = () => { localStorage.removeItem(LS.hist); renderHist(); };
 
-/* ---------- 畫面 ---------- */
-function renderList(){
-  const box=$('#list'); box.innerHTML='';
-  files.forEach(it=>{
-    const div=document.createElement('div'); div.className='item';
-    const img=document.createElement('img'); img.src=it.thumb; img.alt=it.name;
-    const stText={
-      wait:'⏳ 等待上傳',
-      uploading: '⬆️ 上傳中…' + (it.attempt>1 ? `（第 ${it.attempt}/${it.maxAttempts} 次嘗試）` : ''),
-      done:'✅ 上傳成功',
-      error:'❌ 失敗'
-    };
-    const info=document.createElement('div');
-    const width = it.status==='done'?100 : it.status==='uploading'?50 : 0;
-    const errCls = it.status==='uploading' ? 'warn' : 'err';
-    info.innerHTML=`
-      <div><b>${esc(it.name)}</b> <span class="hint">${esc(it.dims)} ${fmtSize(it.file.size)}</span> · ${stText[it.status]}</div>
-      ${it.error?`<div class="${errCls}">${esc(it.error)}</div>`:''}
-      ${it.url?`<div class="url">${esc(it.url)}</div>`:''}
-      <div class="bar"><div style="width:${width}%"></div></div>`;
-    const act=document.createElement('div'); act.className='actions';
-    if(it.url){
-      act.append(btn('複製連結', ()=>copy(it.url)));
-      act.append(btn('開啟', ()=>window.open(it.url,'_blank'), 'ghost'));
-    }
-    if(it.status!=='uploading') act.append(btn('移除', ()=>removeItem(it.id), 'ghost'));
-    div.append(img, info, act);
-    box.append(div);
-  });
-  updateCount();
-}
-function updateCount(){
-  const d=files.filter(f=>f.status==='done').length;
-  const e=files.filter(f=>f.status==='error').length;
-  $('#count').textContent=`共 ${files.length} 筆，已完成 ${d} 筆${e?`，失敗 ${e} 筆`:''}`;
-}
-function buildOut(fmt){
-  const d=files.filter(f=>f.status==='done');
-  if(fmt==='md')   return d.map(f=>`![${f.path.split('/').pop()}](${f.url})`).join('\n');
-  if(fmt==='json') return JSON.stringify(d.map(f=>({name:f.path.split('/').pop(), url:f.url})), null, 2);
-  return d.map(f=>f.url).join('\n');
-}
-function updateOut(){ $('#out').value=buildOut(outFmt); updateCount(); }
-async function copy(text){
-  try{ await navigator.clipboard.writeText(text); }
-  catch(e){ const t=document.createElement('textarea'); t.value=text; document.body.append(t); t.select(); document.execCommand('copy'); t.remove(); }
-  say('#uploadMsg','已複製到剪貼簿','ok');
-}
+const drop = $('#drop');
+const openPicker = () => $('#picker').click();
+drop.onclick = openPicker;
+drop.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPicker(); } };
+$('#picker').onchange = e => { addFiles([...e.target.files]); e.target.value = ''; };
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => addFiles([...e.dataTransfer.files]));
+document.addEventListener('paste', e => { const fs = [...(e.clipboardData?.files || [])]; if (fs.length) addFiles(fs); });
 
-/* ---------- 拖曳 / 點選 / 貼上 ---------- */
-const drop=$('#drop');
-drop.onclick=()=>$('#picker').click();
-$('#picker').onchange=e=>{ addFiles([...e.target.files]); e.target.value=''; };
-['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.add('over'); }));
-['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.remove('over'); }));
-drop.addEventListener('drop', e=>addFiles([...e.dataTransfer.files]));
-document.addEventListener('paste', e=>{ const fs=[...(e.clipboardData?.files||[])]; if(fs.length) addFiles(fs); });
+$('#lbClose').onclick = closeLb;
+$('#lbPrev').onclick = () => lbStep(-1);
+$('#lbNext').onclick = () => lbStep(1);
+$('#lbCopy').onclick = () => { const it = lb.items[lb.i]; if (it.url) copy(it.url); };
+$('#lbMd').onclick = () => { const it = lb.items[lb.i]; if (it.url) copy(`![${it.name}](${it.url})`); };
+$('#lbOpen').onclick = () => { const it = lb.items[lb.i]; if (it.url) window.open(it.view || it.url, '_blank', 'noopener'); };
+$('#lb').addEventListener('click', e => { if (e.target.id === 'lb') closeLb(); });
+document.addEventListener('keydown', e => {
+  if ($('#lb').hidden) return;
+  if (e.key === 'Escape') closeLb();
+  else if (e.key === 'ArrowLeft') lbStep(-1);
+  else if (e.key === 'ArrowRight') lbStep(1);
+});
+window.addEventListener('beforeunload', e => { if (busy) { e.preventDefault(); e.returnValue = ''; } });
 
-/* ---------- 綁定事件 ---------- */
-$('#btnLogin').onclick=login;
-$('#btnLogout').onclick=logout;
-$('#btnCheck').onclick=checkRepo;
-$('#btnUpload').onclick=startUpload;
-$('#btnRetry').onclick=retryFailed;
-$('#btnClearDone').onclick=clearDone;
-$('#btnClearAll').onclick=clearAll;
-$('#btnCopyOut').onclick=()=>copy($('#out').value);
-document.querySelectorAll('[data-fmt]').forEach(b=>b.onclick=()=>{ outFmt=b.dataset.fmt; updateOut(); });
-$('#btnHistClear').onclick=()=>{ localStorage.removeItem(LS.hist); renderHist(); };
-CFG_IDS.forEach(k=>{ const el=$('#'+k); el.addEventListener('input',saveCfg); el.addEventListener('change',saveCfg); });
-
-/* ---------- 初始化 ---------- */
-loadCfg(); renderHist(); renderList(); updateOut();
-if(localStorage.getItem(LS.token)) login();
+(async function init() {
+  loadCfg();
+  // 舊版留存在 localStorage 的 Token 視為「已記住」
+  $('#remember').checked = localStorage.getItem(TK) !== null || localStorage.getItem(LS.remember) === '1';
+  br.path = destDir(readCfg());
+  renderHist();
+  await restoreQueue();
+  renderList(); updateOut(); renderStrip();
+  if (getToken()) login(); else renderBrowser();
+})();
 </script>
 </body>
 </html>
-
-							<script>
-                            	
-							</script>
-                        </body>
-                        </html>
-                    
