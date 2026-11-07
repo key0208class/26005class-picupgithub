@@ -1,0 +1,568 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>神殿試煉圖床上傳器（GitHub 圖床）v2</title>
+<style>
+:root{--bg:#0f1220;--panel:#171c33;--line:#2a3158;--text:#e8ebff;--muted:#9aa3d1;--accent:#7c5cff;--ok:#2ecc71;--err:#ff5d6c;--warn:#ffc857;}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Microsoft JhengHei","PingFang TC",sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+h1{font-size:20px;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:20px;display:grid;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h2{font-size:16px;margin:0 0 12px}
+label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
+input[type=text],input[type=password],input[type=number],select,textarea{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0c0f1e;color:var(--text);font:inherit}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+button{font:inherit;padding:8px 14px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+button.danger{background:var(--err)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.hint{font-size:12px;color:var(--muted)}
+.status{font-size:13px;margin-top:8px;min-height:1em}
+.ok{color:var(--ok)}
+.err{color:var(--err)}
+.warn{color:var(--warn)}
+#drop{border:2px dashed var(--line);border-radius:12px;padding:30px;text-align:center;color:var(--muted);cursor:pointer}
+#drop.over{border-color:var(--accent);background:#1d2344}
+.list{display:grid;gap:8px;margin-top:12px}
+.item{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;background:#0c0f1e;border:1px solid var(--line);border-radius:10px;padding:8px}
+.item img{width:64px;height:64px;object-fit:contain;background:#080a14;border-radius:6px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
+.bar>div{height:100%;background:var(--accent);transition:width .3s}
+.url{font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-all;color:#bfe0ff}
+.actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+ol li{margin:4px 0;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚔️ 神殿試煉圖床上傳器（GitHub 圖床）v2</h1>
+  <div id="who" class="hint">尚未登入</div>
+</header>
+
+<div class="wrap">
+
+<!-- ① 登入 -->
+<section class="card">
+  <h2>① 登入 GitHub</h2>
+  <label>Personal Access Token（建議使用 Fine-grained Token，只授權單一倉庫的 Contents 讀寫）</label>
+  <div class="row" style="grid-template-columns:1fr auto auto">
+    <input type="password" id="token" placeholder="github_pat_xxxxx 或 ghp_xxxxx" autocomplete="off">
+    <button id="btnLogin">登入驗證</button>
+    <button class="ghost" id="btnLogout">登出</button>
+  </div>
+  <p class="hint">Token 只保存在你這台瀏覽器的 localStorage，程式只會直接呼叫 api.github.com，不經過第三方伺服器。公用電腦請用完即登出。</p>
+  <div id="loginMsg" class="status"></div>
+</section>
+
+<!-- ② 設定 -->
+<section class="card">
+  <h2>② 倉庫與連結設定</h2>
+  <div class="row">
+    <div><label>GitHub 帳號／組織（owner）</label><input type="text" id="owner"></div>
+    <div><label>倉庫名稱（repo）</label><input type="text" id="repo" placeholder="例：game-assets"></div>
+    <div><label>分支（branch）</label><input type="text" id="branch" value="main"></div>
+  </div>
+  <div class="row">
+    <div>
+      <label>圖片分類（資料夾）</label>
+      <select id="category">
+        <option value="mercenaries">傭兵 (mercenaries)</option>
+        <option value="characters">角色 (characters)</option>
+        <option value="sprites">動態精靈 (sprites)</option>
+        <option value="pets">寵物 (pets)</option>
+        <option value="misc">其他 (misc)</option>
+      </select>
+    </div>
+    <div><label>子資料夾（選填，例：fire_mage、lv1）</label><input type="text" id="sub"></div>
+    <div>
+      <label>遊戲用連結格式</label>
+      <select id="linkMode">
+        <option value="raw">raw.githubusercontent（原始檔）</option>
+        <option value="cdn">jsDelivr CDN（有快取，速度較快）</option>
+      </select>
+    </div>
+  </div>
+  <label style="display:flex;gap:6px;align-items:center;color:var(--text)">
+    <input type="checkbox" id="autoRename" checked>
+    自動加上時間戳記避免覆蓋（建議開啟）；關閉則保留原檔名，同名檔案會上傳失敗（適合固定檔名的精靈圖影格）
+  </label>
+  <div class="actions" style="margin-top:10px">
+    <button class="ghost" id="btnCheck">檢查倉庫權限</button>
+    <span id="repoMsg" class="status"></span>
+  </div>
+</section>
+
+<!-- ③ 上傳 -->
+<section class="card">
+  <h2>③ 批次選取與上傳</h2>
+  <div class="row" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-bottom:12px">
+    <div>
+      <label>同時上傳數（建議 1）</label>
+      <select id="concurrency">
+        <option value="1">1 張一張上傳（最穩定，建議）</option>
+        <option value="2">2 張同時上傳（較快，但失敗率較高）</option>
+      </select>
+    </div>
+    <div>
+      <label>失敗自動重試次數（預設 5，範圍 0 到 10）</label>
+      <input type="number" id="retryMax" min="0" max="10" value="5">
+    </div>
+  </div>
+  <div id="drop">
+    把圖片拖曳到這裡、點擊選取，或直接 Ctrl+V 貼上截圖<br>
+    <span class="hint">支援 PNG／JPG／GIF／WEBP／SVG／BMP／ICO／AVIF，可一次選多張，單檔上限 25MB</span>
+  </div>
+  <input type="file" id="picker" multiple accept="image/*,.svg,.ico,.avif" hidden>
+  <div class="actions" style="margin-top:12px">
+    <button id="btnUpload">開始批次上傳</button>
+    <button class="ghost" id="btnRetry">重試失敗項目</button>
+    <button class="ghost" id="btnClearDone">清除已完成</button>
+    <button class="danger" id="btnClearAll">全部清空</button>
+    <span id="count" class="hint"></span>
+  </div>
+  <div id="uploadMsg" class="status"></div>
+  <div id="list" class="list"></div>
+</section>
+
+<!-- ④ 結果 -->
+<section class="card">
+  <h2>④ 上傳結果（可直接貼進遊戲）</h2>
+  <div class="actions">
+    <button class="ghost" data-fmt="plain">純網址</button>
+    <button class="ghost" data-fmt="md">Markdown</button>
+    <button class="ghost" data-fmt="json">JSON（程式用）</button>
+    <button id="btnCopyOut">複製全部</button>
+  </div>
+  <textarea id="out" rows="8" style="margin-top:10px;font-family:ui-monospace,Consolas,monospace;font-size:12px"></textarea>
+</section>
+
+<!-- ⑤ 歷史 -->
+<section class="card">
+  <h2>⑤ 歷史紀錄（最近 100 筆）</h2>
+  <div class="actions"><button class="ghost" id="btnHistClear">清空歷史</button></div>
+  <div id="hist" class="list"></div>
+</section>
+
+<!-- 說明 -->
+<section class="card">
+  <h2>使用說明</h2>
+  <ol>
+    <li>到 GitHub 建立一個 <b>公開（Public）</b>倉庫，例如 <code>game-assets</code>，並確認已有至少一個 commit（可勾選 Add a README）。</li>
+    <li>建立 Token：Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Repository access 選「Only select repositories」選剛才的倉庫 → Permissions → <b>Contents：Read and write</b>。</li>
+    <li>把 Token 貼到 ① 並按「登入驗證」，再於 ② 填入 owner、repo，按「檢查倉庫權限」。</li>
+    <li>選擇分類（傭兵／角色／動態精靈／寵物），把整批圖片拖進 ③，按「開始批次上傳」。</li>
+    <li>在 ④ 選擇「純網址」或「JSON」複製，貼進遊戲的圖片路徑即可。</li>
+  </ol>
+  <p class="hint">注意：私人（Private）倉庫的圖片無法被遊戲直接載入，請使用公開倉庫。每張圖會產生一個 commit。GitHub 對內容建立有次數上限（約每分鐘 80 次、每小時 500 次），大量上傳請分批進行。</p>
+</section>
+
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const API = 'https://api.github.com';
+const LS = { token:'gh_up_token', cfg:'gh_up_cfg', hist:'gh_up_hist' };
+const EXT_OK = /\.(png|jpe?g|gif|webp|svg|bmp|ico|avif)$/i;
+const MAX_BYTES = 25 * 1024 * 1024;
+const GAP_MS = 1500;                              // 每張之間的間隔，降低觸發速率限制的機率
+const RETRY_STATUS = [408, 409, 423, 425, 429];   // 暫時性錯誤，會自動重試
+const CFG_IDS = ['owner','repo','branch','category','sub','linkMode','autoRename','concurrency','retryMax'];
+let files = [];       // {id,file,name,thumb,status:'wait'|'uploading'|'done'|'error',path,url,dims,error,attempt,maxAttempts}
+let seq = 0;
+let outFmt = 'plain';
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const enc = s => encodeURIComponent(s);
+const encPath = p => p.split('/').map(encodeURIComponent).join('/');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const fmtSize = b => b >= 1048576 ? (b/1048576).toFixed(1)+' MB' : (b/1024).toFixed(0)+' KB';
+function say(sel, text, cls=''){ const el=$(sel); el.textContent=text; el.className='status '+cls; }
+function btn(text, fn, cls=''){ const b=document.createElement('button'); b.textContent=text; if(cls) b.className=cls; b.onclick=fn; return b; }
+function gh(extra={}){
+  return { Authorization:'Bearer '+localStorage.getItem(LS.token), Accept:'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28', ...extra };
+}
+
+/* ---------- 設定儲存 ---------- */
+function saveCfg(){
+  const c={}; CFG_IDS.forEach(k=>{ const el=$('#'+k); c[k]= el.type==='checkbox' ? el.checked : el.value; });
+  localStorage.setItem(LS.cfg, JSON.stringify(c));
+}
+function loadCfg(){
+  try{
+    const c=JSON.parse(localStorage.getItem(LS.cfg)||'{}');
+    CFG_IDS.forEach(k=>{ if(c[k]===undefined) return; const el=$('#'+k); if(el.type==='checkbox') el.checked=c[k]; else el.value=c[k]; });
+  }catch(e){}
+}
+function readCfg(){
+  saveCfg();
+  const rm = parseInt($('#retryMax').value, 10);
+  const cc = parseInt($('#concurrency').value, 10);
+  return {
+    owner:$('#owner').value.trim(), repo:$('#repo').value.trim(), branch:$('#branch').value.trim()||'main',
+    category:$('#category').value, sub:$('#sub').value.trim(), linkMode:$('#linkMode').value,
+    autoRename:$('#autoRename').checked,
+    retryMax: isNaN(rm) ? 5 : Math.min(10, Math.max(0, rm)),
+    concurrency: cc === 2 ? 2 : 1
+  };
+}
+
+/* ---------- 登入 ---------- */
+async function login(){
+  const t = $('#token').value.trim() || localStorage.getItem(LS.token) || '';
+  if(!t) return say('#loginMsg','請先貼上 Token','err');
+  localStorage.setItem(LS.token, t);
+  say('#loginMsg','驗證中…');
+  try{
+    const r = await fetch(API+'/user', {headers:gh()});
+    if(!r.ok) throw new Error(r.status===401 ? 'Token 無效或已過期' : 'HTTP '+r.status);
+    const u = await r.json();
+    const img=document.createElement('img');
+    img.src=u.avatar_url; img.width=28; img.style.cssText='border-radius:50%;vertical-align:middle;margin-right:6px';
+    const sp=document.createElement('span'); sp.textContent='已登入：'+u.login;
+    $('#who').textContent=''; $('#who').append(img, sp);
+    if(!$('#owner').value){ $('#owner').value=u.login; saveCfg(); }
+    $('#token').value='';
+    say('#loginMsg','登入成功，Token 已保存在本機瀏覽器','ok');
+  }catch(e){
+    localStorage.removeItem(LS.token);
+    say('#loginMsg','登入失敗：'+e.message,'err');
+  }
+}
+function logout(){
+  localStorage.removeItem(LS.token);
+  $('#who').textContent='尚未登入';
+  say('#loginMsg','已登出，並清除本機 Token');
+}
+
+/* ---------- 檢查倉庫 ---------- */
+async function checkRepo(){
+  const c=readCfg();
+  if(!localStorage.getItem(LS.token)) return say('#repoMsg','請先登入','err');
+  if(!c.owner||!c.repo) return say('#repoMsg','請填寫 owner 與 repo','err');
+  try{
+    const r = await fetch(`${API}/repos/${enc(c.owner)}/${enc(c.repo)}`, {headers:gh()});
+    if(r.status===404) throw new Error('找不到倉庫，或 Token 沒有存取此倉庫的權限');
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json();
+    if(d.permissions && d.permissions.push===false) throw new Error('此 Token 只有讀取權限，請加上 Contents: Read and write');
+    let text = `✅ 倉庫可用（預設分支：${d.default_branch}）`;
+    if(d.private) text += '　⚠️ 這是私人倉庫，遊戲無法直接載入圖片，建議改為公開';
+    say('#repoMsg', text, d.private ? 'err' : 'ok');
+  }catch(e){ say('#repoMsg','檢查失敗：'+e.message,'err'); }
+}
+
+/* ---------- 檔名與路徑 ---------- */
+function safeName(name){
+  const m = name.match(/^(.*?)(\.[^.]*)?$/);
+  const base = (m[1]||'').replace(/[^\p{L}\p{N}_-]+/gu,'_').replace(/^_+|_+$/g,'');
+  const ext  = (m[2]||'').toLowerCase().replace(/[^.a-z0-9]/g,'');
+  return (base||'img') + ext;
+}
+function cleanDir(s){
+  return s.split(/[\\/]+/).map(x=>x.trim().replace(/[^\p{L}\p{N}_-]+/gu,'_')).filter(Boolean).join('/');
+}
+function buildPath(name, cfg){
+  const dir = [cfg.category, cleanDir(cfg.sub)].filter(Boolean).join('/');
+  let fn = safeName(name);
+  if(cfg.autoRename){
+    const p=n=>String(n).padStart(2,'0'), d=new Date();
+    const ts = `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+    fn = `${ts}_${Math.random().toString(36).slice(2,6)}_${fn}`;
+  }
+  return dir + '/' + fn;
+}
+function makeLink(path, cfg){
+  const o=enc(cfg.owner), r=enc(cfg.repo), b=encPath(cfg.branch), p=encPath(path);
+  return cfg.linkMode==='cdn'
+    ? `https://cdn.jsdelivr.net/gh/${o}/${r}@${b}/${p}`
+    : `https://raw.githubusercontent.com/${o}/${r}/${b}/${p}`;
+}
+
+/* ---------- 加入佇列 ---------- */
+function addFiles(list){
+  const skipped=[];
+  for(const f of list){
+    if(!(f.type.startsWith('image/') || EXT_OK.test(f.name))){ skipped.push(f.name); continue; }
+    const it={ id:++seq, file:f, name:f.name||'paste.png', thumb:URL.createObjectURL(f), status:'wait', path:'', url:'', dims:'', error:'', attempt:0, maxAttempts:0 };
+    files.push(it);
+    probe(it);
+  }
+  renderList(); updateOut();
+  if(skipped.length) say('#uploadMsg','已略過非圖片檔：'+skipped.join('、'),'err');
+}
+function probe(it){
+  const im=new Image();
+  im.onload=()=>{ it.dims=`${im.naturalWidth}×${im.naturalHeight}`; renderList(); };
+  im.src=it.thumb;
+}
+function removeItem(id){
+  const i=files.findIndex(f=>f.id===id); if(i<0) return;
+  URL.revokeObjectURL(files[i].thumb); files.splice(i,1);
+  renderList(); updateOut();
+}
+
+/* ---------- 上傳核心 ---------- */
+function toBase64(file){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>res(fr.result.split(',')[1]);
+    fr.onerror=()=>rej(new Error('讀取檔案失敗'));
+    fr.readAsDataURL(file);
+  });
+}
+// 把 GitHub 的錯誤碼翻成中文說明
+function errText(status, data){
+  const m = (data && data.message) || '';
+  if(status===422 && /sha/i.test(m)) return '同名檔案已存在（請開啟「自動加時間戳記」或更換檔名）';
+  if(status===409) return 'GitHub 同時寫入衝突';
+  if((status===403 || status===429) && /rate limit|abuse|secondary/i.test(m)) return 'GitHub 速率限制';
+  if(status===401) return 'Token 無效或已過期';
+  return m || ('HTTP '+status);
+}
+// 從回應標頭計算需要等待多久（毫秒）
+function parseWait(r){
+  const ra = Number(r.headers.get('retry-after'));
+  if(ra>0) return ra*1000;
+  const reset = Number(r.headers.get('x-ratelimit-reset'));
+  if(r.headers.get('x-ratelimit-remaining')==='0' && reset>0) return Math.max(0, reset*1000 - Date.now()) + 1000;
+  return 0;
+}
+// 網路中斷後，確認檔案是否其實已經上傳成功
+async function fileExists(path, cfg){
+  try{
+    const r = await fetch(`${API}/repos/${enc(cfg.owner)}/${enc(cfg.repo)}/contents/${encPath(path)}?ref=${enc(cfg.branch)}`, {headers:gh()});
+    return r.ok;
+  }catch(e){ return false; }
+}
+function markDone(it, cfg){
+  it.url = makeLink(it.path, cfg);
+  it.status = 'done'; it.error = '';
+  addHist(it);
+  renderList();
+}
+async function uploadOne(it, cfg){
+  if(it.file.size > MAX_BYTES){
+    it.status='error'; it.error='超過 25MB，請先壓縮'; renderList(); return;
+  }
+  it.path = buildPath(it.name, cfg);
+  it.status = 'uploading'; it.error = ''; it.attempt = 1; it.maxAttempts = cfg.retryMax + 1;
+  renderList();
+
+  let content;
+  try{ content = await toBase64(it.file); }
+  catch(e){ it.status='error'; it.error=e.message; renderList(); return; }
+
+  const api = `${API}/repos/${enc(cfg.owner)}/${enc(cfg.repo)}/contents/${encPath(it.path)}`;
+  let afterNetworkError = false;
+
+  for(let attempt=1; attempt<=it.maxAttempts; attempt++){
+    it.attempt = attempt;
+    let msg='', retryable=false, waitMs=0;
+    try{
+      const r = await fetch(api, {
+        method:'PUT',
+        headers:gh({'Content-Type':'application/json'}),
+        body:JSON.stringify({ message:`upload ${it.path}`, content, branch:cfg.branch })
+      });
+      const data = await r.json().catch(()=>({}));
+      if(r.ok){ markDone(it, cfg); return; }
+
+      // 網路中斷前其實已上傳成功 → 檔案已存在，直接視為成功
+      if(r.status===422 && afterNetworkError && await fileExists(it.path, cfg)){
+        markDone(it, cfg); return;
+      }
+
+      msg = errText(r.status, data);
+      const limited = (r.status===403 || r.status===429) &&
+                      (/rate limit|abuse|secondary/i.test(data.message||'') || r.headers.get('x-ratelimit-remaining')==='0');
+      retryable = RETRY_STATUS.includes(r.status) || limited || r.status>=500;
+      waitMs = parseWait(r);
+    }catch(e){
+      // fetch 本身失敗 = 網路問題
+      msg = '網路連線失敗';
+      retryable = true;
+      afterNetworkError = true;
+    }
+
+    if(!retryable || attempt>=it.maxAttempts){
+      it.status='error';
+      it.error = retryable ? `${msg}（已自動重試 ${cfg.retryMax} 次仍失敗）` : msg;
+      renderList(); return;
+    }
+
+    // 退避等待：2、4、8、16、32 秒；若 GitHub 要求等待更久，則依其要求
+    const backoff = Math.min(60000, 2000 * 2 ** (attempt-1));
+    const wait = Math.min(900000, Math.max(backoff, waitMs));
+    it.error = `第 ${attempt} 次失敗（${msg}），${Math.ceil(wait/1000)} 秒後自動重試（${attempt}/${cfg.retryMax}）`;
+    renderList();
+    await sleep(wait);
+    it.error = '';
+  }
+}
+
+async function startUpload(){
+  if(!localStorage.getItem(LS.token)) return say('#uploadMsg','請先完成 ① 登入','err');
+  const cfg=readCfg();
+  if(!cfg.owner||!cfg.repo) return say('#uploadMsg','請先填寫 owner 與 repo','err');
+  const q=files.filter(f=>f.status==='wait');
+  if(!q.length) return say('#uploadMsg','沒有待上傳的檔案，請先加入圖片','err');
+
+  $('#btnUpload').disabled=true;
+  say('#uploadMsg',`上傳中，共 ${q.length} 張，同時 ${cfg.concurrency} 張，失敗自動重試 ${cfg.retryMax} 次…`);
+  let next=0;
+  const worker = async()=>{
+    while(next<q.length){
+      const it=q[next++];
+      await uploadOne(it,cfg);
+      renderList(); updateOut(); renderHist();
+      if(next<q.length) await sleep(GAP_MS);
+    }
+  };
+  try{
+    await Promise.all(Array.from({length:cfg.concurrency}, worker));
+  }finally{
+    $('#btnUpload').disabled=false;
+  }
+  const ok=q.filter(f=>f.status==='done').length;
+  say('#uploadMsg', `完成：成功 ${ok}／${q.length}${ok<q.length?'，仍失敗的項目可按「重試失敗項目」':''}`, ok===q.length?'ok':'err');
+}
+async function retryFailed(){
+  const n=files.filter(f=>f.status==='error').length;
+  if(!n) return say('#uploadMsg','目前沒有失敗的項目');
+  files.forEach(f=>{ if(f.status==='error'){ f.status='wait'; f.error=''; } });
+  renderList();
+  await startUpload();
+}
+function clearDone(){
+  files.filter(f=>f.status==='done').forEach(f=>URL.revokeObjectURL(f.thumb));
+  files=files.filter(f=>f.status!=='done');
+  renderList(); updateOut();
+}
+function clearAll(){
+  if(!confirm('確定清空全部待處理清單？（不會刪除 GitHub 上已上傳的檔案）')) return;
+  files.forEach(f=>URL.revokeObjectURL(f.thumb)); files=[];
+  renderList(); updateOut();
+}
+
+/* ---------- 歷史 ---------- */
+function addHist(it){
+  const h=JSON.parse(localStorage.getItem(LS.hist)||'[]');
+  h.unshift({ name:it.name, path:it.path, url:it.url, time:new Date().toLocaleString('zh-TW',{hour12:false}) });
+  localStorage.setItem(LS.hist, JSON.stringify(h.slice(0,100)));
+}
+function renderHist(){
+  const h=JSON.parse(localStorage.getItem(LS.hist)||'[]');
+  const box=$('#hist'); box.innerHTML='';
+  if(!h.length){ box.innerHTML='<p class="hint">尚無紀錄</p>'; return; }
+  h.forEach(x=>{
+    const div=document.createElement('div'); div.className='item'; div.style.gridTemplateColumns='1fr auto';
+    div.innerHTML=`<div><b>${esc(x.name)}</b> <span class="hint">${esc(x.time)}</span><div class="url">${esc(x.url)}</div></div>`;
+    const a=document.createElement('div'); a.className='actions';
+    a.append(btn('複製', ()=>copy(x.url)));
+    div.append(a); box.append(div);
+  });
+}
+
+/* ---------- 畫面 ---------- */
+function renderList(){
+  const box=$('#list'); box.innerHTML='';
+  files.forEach(it=>{
+    const div=document.createElement('div'); div.className='item';
+    const img=document.createElement('img'); img.src=it.thumb; img.alt=it.name;
+    const stText={
+      wait:'⏳ 等待上傳',
+      uploading: '⬆️ 上傳中…' + (it.attempt>1 ? `（第 ${it.attempt}/${it.maxAttempts} 次嘗試）` : ''),
+      done:'✅ 上傳成功',
+      error:'❌ 失敗'
+    };
+    const info=document.createElement('div');
+    const width = it.status==='done'?100 : it.status==='uploading'?50 : 0;
+    const errCls = it.status==='uploading' ? 'warn' : 'err';
+    info.innerHTML=`
+      <div><b>${esc(it.name)}</b> <span class="hint">${esc(it.dims)} ${fmtSize(it.file.size)}</span> · ${stText[it.status]}</div>
+      ${it.error?`<div class="${errCls}">${esc(it.error)}</div>`:''}
+      ${it.url?`<div class="url">${esc(it.url)}</div>`:''}
+      <div class="bar"><div style="width:${width}%"></div></div>`;
+    const act=document.createElement('div'); act.className='actions';
+    if(it.url){
+      act.append(btn('複製連結', ()=>copy(it.url)));
+      act.append(btn('開啟', ()=>window.open(it.url,'_blank'), 'ghost'));
+    }
+    if(it.status!=='uploading') act.append(btn('移除', ()=>removeItem(it.id), 'ghost'));
+    div.append(img, info, act);
+    box.append(div);
+  });
+  updateCount();
+}
+function updateCount(){
+  const d=files.filter(f=>f.status==='done').length;
+  const e=files.filter(f=>f.status==='error').length;
+  $('#count').textContent=`共 ${files.length} 筆，已完成 ${d} 筆${e?`，失敗 ${e} 筆`:''}`;
+}
+function buildOut(fmt){
+  const d=files.filter(f=>f.status==='done');
+  if(fmt==='md')   return d.map(f=>`![${f.path.split('/').pop()}](${f.url})`).join('\n');
+  if(fmt==='json') return JSON.stringify(d.map(f=>({name:f.path.split('/').pop(), url:f.url})), null, 2);
+  return d.map(f=>f.url).join('\n');
+}
+function updateOut(){ $('#out').value=buildOut(outFmt); updateCount(); }
+async function copy(text){
+  try{ await navigator.clipboard.writeText(text); }
+  catch(e){ const t=document.createElement('textarea'); t.value=text; document.body.append(t); t.select(); document.execCommand('copy'); t.remove(); }
+  say('#uploadMsg','已複製到剪貼簿','ok');
+}
+
+/* ---------- 拖曳 / 點選 / 貼上 ---------- */
+const drop=$('#drop');
+drop.onclick=()=>$('#picker').click();
+$('#picker').onchange=e=>{ addFiles([...e.target.files]); e.target.value=''; };
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{ e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e=>addFiles([...e.dataTransfer.files]));
+document.addEventListener('paste', e=>{ const fs=[...(e.clipboardData?.files||[])]; if(fs.length) addFiles(fs); });
+
+/* ---------- 綁定事件 ---------- */
+$('#btnLogin').onclick=login;
+$('#btnLogout').onclick=logout;
+$('#btnCheck').onclick=checkRepo;
+$('#btnUpload').onclick=startUpload;
+$('#btnRetry').onclick=retryFailed;
+$('#btnClearDone').onclick=clearDone;
+$('#btnClearAll').onclick=clearAll;
+$('#btnCopyOut').onclick=()=>copy($('#out').value);
+document.querySelectorAll('[data-fmt]').forEach(b=>b.onclick=()=>{ outFmt=b.dataset.fmt; updateOut(); });
+$('#btnHistClear').onclick=()=>{ localStorage.removeItem(LS.hist); renderHist(); };
+CFG_IDS.forEach(k=>{ const el=$('#'+k); el.addEventListener('input',saveCfg); el.addEventListener('change',saveCfg); });
+
+/* ---------- 初始化 ---------- */
+loadCfg(); renderHist(); renderList(); updateOut();
+if(localStorage.getItem(LS.token)) login();
+</script>
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
